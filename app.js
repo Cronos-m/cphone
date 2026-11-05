@@ -40,7 +40,7 @@
     secretResult: { kind: 'num', text: '7543' },
     currentPage: 0,
     
-    photoSourceSrc: 'assets/demo.jpg',
+    photoSourceSrc: './assets/demo.jpg',
     fontName: 'Cryptext25',
     inkColor: '#151515',
     
@@ -163,7 +163,7 @@
         const iconSrc = app.icon[currentTheme] || app.icon.android;
 
         item.innerHTML = `
-          <div class="app-icon-img"><img src="${iconSrc}" alt="${app.name}" onerror="this.src='icon.png'"></div>
+          <div class="app-icon-img"><img src="${iconSrc}" alt="${app.name}" onerror="this.src='./icon.png'"></div>
           <span class="app-icon-label">${app.name}</span>
         `;
         grid.appendChild(item);
@@ -178,7 +178,7 @@
         item.className = 'app-icon-item';
         const iconSrc = app.icon[currentTheme] || app.icon.android;
         item.innerHTML = `
-          <div class="app-icon-img"><img src="${iconSrc}" alt="${app.name}" onerror="this.src='icon.png'"></div>
+          <div class="app-icon-img"><img src="${iconSrc}" alt="${app.name}" onerror="this.src='./icon.png'"></div>
         `;
         DOM.dockContainer.appendChild(item);
       });
@@ -196,7 +196,7 @@
   }
 
   /* =========================================================================
-   * 6. LÓGICA DEL TRUCO (PIN Y CANVAS)
+   * 6. LÓGICA DEL TRUCO (PIN Y CANVAS DE REVELACIÓN PWA)
    * ========================================================================= */
   function decodePin(pin) {
     const d = pin.split('').map(Number);
@@ -215,6 +215,7 @@
   function drawPhotoOnCanvas(canvasEl, sampleText = '7543') {
     const ctx = canvasEl.getContext('2d');
     const baseImg = new Image();
+    baseImg.crossOrigin = 'anonymous';
 
     baseImg.onload = () => {
       canvasEl.width = baseImg.naturalWidth || 1080;
@@ -240,6 +241,20 @@
       ctx.fillText(sampleText, 0, 0);
       ctx.restore();
 
+      if (canvasEl !== DOM.editorPreviewCanvas) {
+        DOM.revealedPhotoImg.src = canvasEl.toDataURL('image/jpeg', 0.92);
+      }
+    };
+
+    baseImg.onerror = () => {
+      canvasEl.width = 1080;
+      canvasEl.height = 1920;
+      ctx.fillStyle = '#1c1c1e';
+      ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
+      ctx.font = `80px "${state.fontName}", sans-serif`;
+      ctx.fillStyle = state.inkColor;
+      ctx.textAlign = 'center';
+      ctx.fillText(sampleText, canvasEl.width / 2, canvasEl.height / 2);
       if (canvasEl !== DOM.editorPreviewCanvas) {
         DOM.revealedPhotoImg.src = canvasEl.toDataURL('image/jpeg', 0.92);
       }
@@ -509,24 +524,25 @@
   initClockHoldSecret(DOM.lockClockText);
 
   /* =========================================================================
-   * 10. CARGA DE FUENTES Y FONDOS PREDETERMINADOS (NOMBRES EXACTOS)
+   * 10. CARGA DE FUENTES Y FONDOS EN MODO PWA OFFLINE
    * ========================================================================= */
   async function initDefaults() {
-    DOM.phoneFrameContainer.style.setProperty('--lock-bg', `url('assets/lock_bg.png')`);
-    DOM.phoneFrameContainer.style.setProperty('--home-bg', `url('assets/home_bg.png')`);
+    DOM.phoneFrameContainer.style.setProperty('--lock-bg', `url('./assets/lock_bg.png')`);
+    DOM.phoneFrameContainer.style.setProperty('--home-bg', `url('./assets/home_bg.png')`);
 
     try {
-      const font2 = new FontFace('Cryptext2', 'url("assets/fonts/Cryptext 2 - Font.ttf")');
-      const font25 = new FontFace('Cryptext25', 'url("assets/fonts/Cryptext 2.5 - Font.ttf")');
+      const font2 = new FontFace('Cryptext2', 'url("./assets/fonts/Cryptext 2 - Font.ttf")');
+      const font25 = new FontFace('Cryptext25', 'url("./assets/fonts/Cryptext 2.5 - Font.ttf")');
       
-      const [loadedFont2, loadedFont25] = await Promise.all([font2.load(), font25.load()]);
+      const loadedFont2 = await font2.load();
+      const loadedFont25 = await font25.load();
       
       document.fonts.add(loadedFont2);
       document.fonts.add(loadedFont25);
       
       state.fontName = 'Cryptext25';
     } catch (e) {
-      console.warn('Error al cargar las fuentes desde assets/fonts/. Verifique los nombres:', e);
+      console.warn('PWA Offline: Cargando con fuentes de sistema como respaldo.');
     }
   }
 
