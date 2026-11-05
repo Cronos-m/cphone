@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
   <meta name="theme-color" content="#09090b">
-  <title>Cphone</title>
+  <title>Mental Picture PWA</title>
   
   <link rel="icon" type="image/png" href="icon.png">
   <link rel="apple-touch-icon" href="icon.png">
@@ -16,7 +16,7 @@
 
 <div id="app" class="app-viewport">
 
-  <!-- ==================== PANTALLA 1: AJUSTES (NOIR / ESTILO PROFESIONAL) ==================== -->
+  <!-- ==================== PANTALLA 1: AJUSTES (DISEÑO PROFESIONAL MINIMALISTA) ==================== -->
   <section id="screen-settings" class="screen active noir-settings">
     <div class="noir-header">
       <h1>Configuración</h1>
@@ -51,22 +51,29 @@
 
     <!-- 3. Tipografía y Estilo de Escritura -->
     <div class="noir-section">
-      <h3>Tipografía y Tinta</h3>
-      <div class="noir-field">
-        <span>Archivo de fuente (.ttf / .woff)</span>
+      <span class="section-label">Tipografía y Tinta</span>
+      
+      <div class="noir-field-group" style="margin-bottom: 14px;">
+        <div class="noir-info-text" style="margin-bottom: 8px;">
+          <strong>Archivo de fuente</strong>
+          <small>Formatos .ttf / .woff admitidos</small>
+        </div>
         <input type="file" id="input-font-file" accept=".ttf,.woff,.woff2" hidden>
-        <button class="noir-btn" id="btn-upload-font">Cargar archivo de fuente</button>
+        <button class="noir-btn-full" id="btn-upload-font">Cargar archivo de fuente</button>
       </div>
-      <div class="noir-field" style="margin-top: 14px;">
-        <span>Color de la tinta</span>
+
+      <div class="noir-row-action" style="border-top: 1px solid var(--surface-border); padding-top: 14px;">
+        <div class="noir-info-text">
+          <strong>Color de la tinta</strong>
+          <small>Tono de escritura predeterminado</small>
+        </div>
         <div class="noir-color-wrapper">
           <input type="color" id="input-ink-color" value="#151515">
-          <span class="color-desc">Tono de escritura predeterminado</span>
         </div>
       </div>
     </div>
 
-    <button class="noir-btn primary" id="btn-start-trick">¡Empecemos!</button>
+    <button class="noir-btn-primary" id="btn-start-trick">Iniciar Simulación</button>
   </section>
 
 
@@ -194,7 +201,7 @@
 
         <footer class="gallery-bottom-bar">
           <button class="gallery-action-btn" aria-label="Compartir">📤</button>
-          <button class="gallery-action-btn" aria-label="Favorito">❤️</button>
+          <button class="gallery-action-btn" aria-label="Favorito">♡</button>
           <button class="gallery-action-btn" aria-label="Eliminar">🗑️</button>
         </footer>
 

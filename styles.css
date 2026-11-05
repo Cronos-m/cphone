@@ -50,7 +50,7 @@ html, body {
   display: flex;
 }
 
-/* ==================== ESTILO NOIR PROFESIONAL (AJUSTES) ==================== */
+/* ==================== ESTILO AJUSTES / NOIR (PROFESIONAL) ==================== */
 .noir-settings {
   background: var(--bg-dark);
   overflow-y: auto;
@@ -59,53 +59,45 @@ html, body {
 
 .noir-header {
   margin-bottom: 28px;
-  padding-left: 4px;
+  padding-left: 2px;
 }
 
 .noir-header h1 {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 600;
   color: #fff;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.4px;
 }
 
 .noir-header p {
   font-size: 13px;
   color: var(--text-muted);
-  margin-top: 2px;
+  margin-top: 3px;
 }
 
 .noir-section {
   background: var(--surface-dark);
   border: 1px solid var(--surface-border);
   border-radius: 16px;
-  padding: 16px;
+  padding: 16px 18px;
   margin-bottom: 14px;
 }
 
 .section-label {
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.9px;
   display: block;
-  margin-bottom: 10px;
-}
-
-.noir-section h3 {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--text-muted);
   margin-bottom: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
 }
 
 .noir-row-action {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
 }
 
 .noir-info-text {
@@ -115,94 +107,86 @@ html, body {
 }
 
 .noir-info-text strong {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 500;
-  color: #fff;
+  color: #f4f4f5;
+  letter-spacing: -0.1px;
 }
 
 .noir-info-text small {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--text-muted);
 }
 
 .noir-action-btn {
   background: var(--surface-hover);
   border: 1px solid var(--surface-border);
-  color: #fff;
-  padding: 8px 14px;
+  color: #f4f4f5;
+  padding: 7px 14px;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
 }
 
 .noir-action-btn:active {
   background: #27272a;
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
-.noir-field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.noir-field span {
-  font-size: 13px;
-  color: #d4d4d8;
-  font-weight: 500;
-}
-
-.noir-btn {
+.noir-btn-full {
   width: 100%;
-  height: 42px;
-  border-radius: 10px;
+  height: 38px;
+  border-radius: 8px;
   background: var(--surface-hover);
   border: 1px solid var(--surface-border);
-  color: #fff;
-  font-size: 13.5px;
+  color: #f4f4f5;
+  font-size: 13px;
   font-weight: 500;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
   transition: background 0.15s;
 }
 
-.noir-btn:active {
+.noir-btn-full:active {
   background: #27272a;
-}
-
-.noir-btn.primary {
-  background: var(--primary-accent);
-  color: var(--on-primary);
-  border: none;
-  font-weight: 600;
-  margin-top: 24px;
 }
 
 .noir-color-wrapper {
   display: flex;
   align-items: center;
-  gap: 12px;
   background: var(--surface-hover);
-  padding: 8px 12px;
-  border-radius: 10px;
+  padding: 4px;
+  border-radius: 8px;
   border: 1px solid var(--surface-border);
 }
 
 .noir-color-wrapper input[type="color"] {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border: none;
   border-radius: 6px;
   background: none;
   cursor: pointer;
 }
 
-.color-desc {
-  font-size: 12.5px;
-  color: var(--text-muted);
+.noir-btn-primary {
+  width: 100%;
+  height: 46px;
+  border-radius: 12px;
+  background: var(--primary-accent);
+  color: var(--on-primary);
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: opacity 0.15s;
+}
+
+.noir-btn-primary:active {
+  opacity: 0.85;
 }
 
 /* ==================== SIMULADOR MARCO DE TELÉFONO ==================== */
