@@ -40,9 +40,8 @@
     secretResult: { kind: 'num', text: '7543' },
     currentPage: 0,
     
-    bgImageSrc: null,
     photoSourceSrc: 'assets/demo.jpg',
-    fontName: 'CustomHandwriting',
+    fontName: 'Cryptext25',
     inkColor: '#151515',
     
     photoConfig: {
@@ -56,12 +55,18 @@
   const $ = id => document.getElementById(id);
 
   /* =========================================================================
-   * 3. DOM ELEMENTS
+   * 3. ELEMENTOS DOM
    * ========================================================================= */
   const DOM = {
     screenSettings: $('screen-settings'),
+    screenPhotoEditor: $('screen-photo-editor'),
     screenPhone: $('screen-phone'),
     phoneFrameContainer: $('phone-frame-container'),
+    
+    btnOpenPhotoEditor: $('btn-open-photo-editor'),
+    btnClosePhotoEditor: $('btn-close-photo-editor'),
+    editorPreviewCanvas: $('editor-preview-canvas'),
+
     layerLock: $('layer-lock'),
     layerPin: $('layer-pin'),
     layerHome: $('layer-home'),
@@ -85,10 +90,21 @@
     dockContainer: $('dock-container'),
     revealedPhotoImg: $('revealed-photo-img'),
 
-    inputBgFile: $('input-bg-file'),
-    btnUploadBg: $('btn-upload-bg'),
+    inputLockBgFile: $('input-lockbg-file'),
+    btnUploadLockBg: $('btn-upload-lockbg'),
+    inputHomeBgFile: $('input-homebg-file'),
+    btnUploadHomeBg: $('btn-upload-homebg'),
     inputPhotoFile: $('input-photo-file'),
     btnUploadPhoto: $('btn-upload-photo'),
+    
+    inputTextSize: $('input-text-size'),
+    textSizeVal: $('text-size-val'),
+    inputTextPosX: $('input-text-posx'),
+    textPosXVal: $('text-posx-val'),
+    inputTextPosY: $('input-text-posy'),
+    textPosYVal: $('text-posy-val'),
+
+    selectFontFamily: $('select-font-family'),
     inputFontFile: $('input-font-file'),
     btnUploadFont: $('btn-upload-font'),
     inputInkColor: $('input-ink-color'),
@@ -196,40 +212,52 @@
     }
   }
 
-  function generateRevealedPhoto(result) {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+  function drawPhotoOnCanvas(canvasEl, sampleText = '7543') {
+    const ctx = canvasEl.getContext('2d');
     const baseImg = new Image();
-    
+
     baseImg.onload = () => {
-      canvas.width = baseImg.naturalWidth || 1080;
-      canvas.height = baseImg.naturalHeight || 1920;
-      
+      canvasEl.width = baseImg.naturalWidth || 1080;
+      canvasEl.height = baseImg.naturalHeight || 1920;
+
       ctx.drawImage(baseImg, 0, 0);
 
-      const W = canvas.width;
-      const H = canvas.height;
+      const W = canvasEl.width;
+      const H = canvasEl.height;
       const fs = Math.max(16, (state.photoConfig.size / 100) * W);
-      
+
       ctx.save();
       ctx.translate((state.photoConfig.x / 100) * W, (state.photoConfig.y / 100) * H);
       ctx.rotate((state.photoConfig.rot * Math.PI) / 180);
       ctx.globalCompositeOperation = 'multiply';
       ctx.globalAlpha = 0.94;
-      
+
       ctx.font = `${fs}px "${state.fontName}", sans-serif`;
       ctx.fillStyle = state.inkColor;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      const textToDraw = result.kind === 'num' ? result.text : `${result.rank}${result.suitSymbol}`;
-      ctx.fillText(textToDraw, 0, 0);
+      ctx.fillText(sampleText, 0, 0);
       ctx.restore();
 
-      DOM.revealedPhotoImg.src = canvas.toDataURL('image/jpeg', 0.92);
+      if (canvasEl !== DOM.editorPreviewCanvas) {
+        DOM.revealedPhotoImg.src = canvasEl.toDataURL('image/jpeg', 0.92);
+      }
     };
 
     baseImg.src = state.photoSourceSrc;
+  }
+
+  function updateEditorPreview() {
+    if (DOM.editorPreviewCanvas) {
+      drawPhotoOnCanvas(DOM.editorPreviewCanvas, '7543');
+    }
+  }
+
+  function generateRevealedPhoto(result) {
+    const tempCanvas = document.createElement('canvas');
+    const textToDraw = result.kind === 'num' ? result.text : `${result.rank}${result.suitSymbol}`;
+    drawPhotoOnCanvas(tempCanvas, textToDraw);
   }
 
   /* =========================================================================
@@ -269,6 +297,7 @@
   function startTrick() {
     applyOSTheme();
     DOM.screenSettings.classList.remove('active');
+    DOM.screenPhotoEditor.classList.remove('active');
     DOM.screenPhone.classList.add('active');
     state.pinInput = '';
     updatePinDots();
@@ -277,6 +306,7 @@
 
   function returnToSettings() {
     DOM.screenPhone.classList.remove('active');
+    DOM.screenPhotoEditor.classList.remove('active');
     DOM.screenSettings.classList.add('active');
   }
 
@@ -348,31 +378,92 @@
     lastHomeClick = now;
   });
 
-  DOM.btnUploadBg.addEventListener('click', () => DOM.inputBgFile.click());
-  DOM.inputBgFile.addEventListener('change', e => {
+  DOM.btnOpenPhotoEditor.addEventListener('click', () => {
+    DOM.screenSettings.classList.remove('active');
+    DOM.screenPhotoEditor.classList.add('active');
+    updateEditorPreview();
+  });
+
+  DOM.btnClosePhotoEditor.addEventListener('click', () => {
+    DOM.screenPhotoEditor.classList.remove('active');
+    DOM.screenSettings.classList.add('active');
+  });
+
+  DOM.btnUploadLockBg.addEventListener('click', () => DOM.inputLockBgFile.click());
+  DOM.inputLockBgFile.addEventListener('change', e => {
     const file = e.target.files[0];
-    if (file) DOM.phoneFrameContainer.style.setProperty('--phone-bg', `url('${URL.createObjectURL(file)}')`);
+    if (file) {
+      const url = URL.createObjectURL(file);
+      DOM.phoneFrameContainer.style.setProperty('--lock-bg', `url('${url}')`);
+    }
+  });
+
+  DOM.btnUploadHomeBg.addEventListener('click', () => DOM.inputHomeBgFile.click());
+  DOM.inputHomeBgFile.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      DOM.phoneFrameContainer.style.setProperty('--home-bg', `url('${url}')`);
+    }
   });
 
   DOM.btnUploadPhoto.addEventListener('click', () => DOM.inputPhotoFile.click());
   DOM.inputPhotoFile.addEventListener('change', e => {
     const file = e.target.files[0];
-    if (file) state.photoSourceSrc = URL.createObjectURL(file);
+    if (file) {
+      state.photoSourceSrc = URL.createObjectURL(file);
+      updateEditorPreview();
+    }
+  });
+
+  DOM.inputTextSize.addEventListener('input', e => {
+    const val = e.target.value;
+    state.photoConfig.size = parseFloat(val);
+    DOM.textSizeVal.textContent = `${val}%`;
+    updateEditorPreview();
+  });
+
+  DOM.inputTextPosX.addEventListener('input', e => {
+    const val = e.target.value;
+    state.photoConfig.x = parseFloat(val);
+    DOM.textPosXVal.textContent = `${val}%`;
+    updateEditorPreview();
+  });
+
+  DOM.inputTextPosY.addEventListener('input', e => {
+    const val = e.target.value;
+    state.photoConfig.y = parseFloat(val);
+    DOM.textPosYVal.textContent = `${val}%`;
+    updateEditorPreview();
+  });
+
+  DOM.selectFontFamily.addEventListener('change', e => {
+    const val = e.target.value;
+    if (val === 'custom') {
+      DOM.btnUploadFont.classList.remove('hidden');
+    } else {
+      DOM.btnUploadFont.classList.add('hidden');
+      state.fontName = val;
+      updateEditorPreview();
+    }
   });
 
   DOM.btnUploadFont.addEventListener('click', () => DOM.inputFontFile.click());
   DOM.inputFontFile.addEventListener('change', async e => {
     const file = e.target.files[0];
     if (file) {
-      const customFont = new FontFace('CustomHandwriting', `url(${URL.createObjectURL(file)})`);
+      const customFont = new FontFace('CustomUserFont', `url(${URL.createObjectURL(file)})`);
       await customFont.load();
       document.fonts.add(customFont);
-      state.fontName = 'CustomHandwriting';
-      alert('¡Fuente cargada!');
+      state.fontName = 'CustomUserFont';
+      updateEditorPreview();
     }
   });
 
-  DOM.inputInkColor.addEventListener('input', e => { state.inkColor = e.target.value; });
+  DOM.inputInkColor.addEventListener('input', e => { 
+    state.inkColor = e.target.value;
+    updateEditorPreview();
+  });
 
   let lockStartY = 0;
   DOM.layerLock.addEventListener('touchstart', e => { lockStartY = e.touches[0].clientY; });
@@ -418,8 +509,27 @@
   initClockHoldSecret(DOM.lockClockText);
 
   /* =========================================================================
-   * 10. REGISTRO SERVICE WORKER (CACHE OFFLINE INSTANTÁNEO)
+   * 10. CARGA DE FUENTES Y FONDOS PREDETERMINADOS (NOMBRES EXACTOS)
    * ========================================================================= */
+  async function initDefaults() {
+    DOM.phoneFrameContainer.style.setProperty('--lock-bg', `url('assets/lock_bg.png')`);
+    DOM.phoneFrameContainer.style.setProperty('--home-bg', `url('assets/home_bg.png')`);
+
+    try {
+      const font2 = new FontFace('Cryptext2', 'url("assets/fonts/Cryptext 2 - Font.ttf")');
+      const font25 = new FontFace('Cryptext25', 'url("assets/fonts/Cryptext 2.5 - Font.ttf")');
+      
+      const [loadedFont2, loadedFont25] = await Promise.all([font2.load(), font25.load()]);
+      
+      document.fonts.add(loadedFont2);
+      document.fonts.add(loadedFont25);
+      
+      state.fontName = 'Cryptext25';
+    } catch (e) {
+      console.warn('Error al cargar las fuentes desde assets/fonts/. Verifique los nombres:', e);
+    }
+  }
+
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js').catch(() => {});
@@ -430,6 +540,7 @@
    * 11. INICIALIZACIÓN
    * ========================================================================= */
   applyOSTheme();
+  initDefaults();
   updateClocks();
   setInterval(updateClocks, 10000);
   updateHomeSlider();

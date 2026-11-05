@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-  <meta name="theme-color" content="#09090b">
+  <meta name="theme-color" content="#121217">
   <title>Mental Picture PWA</title>
   
   <link rel="icon" type="image/png" href="icon.png">
@@ -16,64 +16,156 @@
 
 <div id="app" class="app-viewport">
 
-  <!-- ==================== PANTALLA 1: AJUSTES (DISEÑO PROFESIONAL MINIMALISTA) ==================== -->
-  <section id="screen-settings" class="screen active noir-settings">
-    <div class="noir-header">
-      <h1>Configuración</h1>
-      <p>Parámetros internos del sistema</p>
-    </div>
+  <!-- ==================== PANTALLA 1: AJUSTES (NEUMORFISMO) ==================== -->
+  <section id="screen-settings" class="screen active neu-settings-screen">
+    <div class="neu-container">
+      
+      <header class="neu-header">
+        <h1>Configuración</h1>
+        <p>Panel de control y activos de la ilusión</p>
+      </header>
 
-    <!-- 1. Fondo de pantalla -->
-    <div class="noir-section">
-      <span class="section-label">Pantalla de Bloqueo</span>
-      <div class="noir-row-action">
-        <div class="noir-info-text">
-          <strong>Fondo personalizado</strong>
-          <small>Imagen de bloqueo del dispositivo</small>
+      <!-- Guía de Uso & Consejos -->
+      <div class="neu-card neu-card-col neu-guide-card">
+        <div class="neu-info" style="width: 100%;">
+          <strong>Guía de Uso & Consejos</strong>
+          <ul class="neu-instructions-list">
+            <li><strong>Fondo idéntico:</strong> Usa `lock_bg.png` y `home_bg.png` o sube una captura del celular del espectador.</li>
+            <li><strong>Gestos secretos:</strong> Mantén presionado el reloj de la barra de estado superior durante 2 segundos para volver aquí.</li>
+            <li><strong>Doble toque en Home:</strong> Haz doble toque en cualquier espacio vacío para bloquear el teléfono de nuevo.</li>
+          </ul>
         </div>
-        <input type="file" id="input-bg-file" accept="image/*" hidden>
-        <button class="noir-action-btn" id="btn-upload-bg">Examinar</button>
       </div>
-    </div>
 
-    <!-- 2. Foto de revelación -->
-    <div class="noir-section">
-      <span class="section-label">Revelación</span>
-      <div class="noir-row-action">
-        <div class="noir-info-text">
-          <strong>Foto base (Papel)</strong>
-          <small>Imagen donde se inscribe el resultado</small>
+      <!-- 1. Fondo de Bloqueo y PIN -->
+      <div class="neu-card">
+        <div class="neu-info">
+          <strong>Fondo de Bloqueo & PIN</strong>
+          <small>Wallpaper de lockscreen y teclado</small>
+        </div>
+        <input type="file" id="input-lockbg-file" accept="image/*" hidden>
+        <button class="neu-btn-action btn-blue" id="btn-upload-lockbg">Examinar</button>
+      </div>
+
+      <!-- 2. Fondo de Pantalla de Inicio (Home) -->
+      <div class="neu-card">
+        <div class="neu-info">
+          <strong>Fondo de Inicio (Home)</strong>
+          <small>Wallpaper de la cuadrícula de apps</small>
+        </div>
+        <input type="file" id="input-homebg-file" accept="image/*" hidden>
+        <button class="neu-btn-action btn-blue" id="btn-upload-homebg">Examinar</button>
+      </div>
+
+      <!-- 3. Acceso a Pantalla: Foto predicción y letra -->
+      <div class="neu-card">
+        <div class="neu-info">
+          <strong>Foto predicción y letra</strong>
+          <small>Ajusta la imagen base, posición y tipografía</small>
+        </div>
+        <button class="neu-btn-action btn-blue" id="btn-open-photo-editor">Configurar</button>
+      </div>
+
+      <!-- Botón de Inicio en Verde -->
+      <button class="neu-btn-submit btn-green" id="btn-start-trick">Iniciar Simulación</button>
+
+    </div>
+  </section>
+
+
+  <!-- ==================== PANTALLA DE EDICIÓN: FOTO PREDICCIÓN Y LETRA ==================== -->
+  <section id="screen-photo-editor" class="screen neu-settings-screen">
+    <div class="neu-container">
+      
+      <header class="neu-header-inline">
+        <button class="neu-btn-back" id="btn-close-photo-editor">‹ Volver</button>
+        <h1 style="font-size: 18px;">Foto predicción y letra</h1>
+      </header>
+
+      <!-- VISTA PREVIA EN TIEMPO REAL CON CANVAS -->
+      <div class="neu-card neu-preview-container">
+        <div class="preview-stage">
+          <canvas id="editor-preview-canvas"></canvas>
+        </div>
+      </div>
+
+      <!-- SELECCIÓN DE IMAGEN -->
+      <div class="neu-card">
+        <div class="neu-info">
+          <strong>Imagen Base</strong>
+          <small>Cambia la foto de fondo del papel</small>
         </div>
         <input type="file" id="input-photo-file" accept="image/*" hidden>
-        <button class="noir-action-btn" id="btn-upload-photo">Seleccionar</button>
+        <button class="neu-btn-action btn-blue" id="btn-upload-photo">Cargar Foto</button>
       </div>
-    </div>
 
-    <!-- 3. Tipografía y Estilo de Escritura -->
-    <div class="noir-section">
-      <span class="section-label">Tipografía y Tinta</span>
-      
-      <div class="noir-field-group" style="margin-bottom: 14px;">
-        <div class="noir-info-text" style="margin-bottom: 8px;">
-          <strong>Archivo de fuente</strong>
-          <small>Formatos .ttf / .woff admitidos</small>
+      <!-- CONTROLES DE TIPOGRAFÍA Y TINTA -->
+      <div class="neu-card neu-card-col">
+        <div class="neu-info" style="width: 100%;">
+          <strong>Estilo de Tipografía</strong>
+          <small>Selecciona la fuente y el color del pigmento</small>
         </div>
+
+        <div class="neu-select-wrapper" style="width: 100%;">
+          <select id="select-font-family" class="neu-select">
+            <option value="Cryptext25">Cryptext 2.5 (Predeterminada)</option>
+            <option value="Cryptext2">Cryptext 2</option>
+            <option value="custom">Subir archivo personalizado (.ttf)...</option>
+          </select>
+        </div>
+
         <input type="file" id="input-font-file" accept=".ttf,.woff,.woff2" hidden>
-        <button class="noir-btn-full" id="btn-upload-font">Cargar archivo de fuente</button>
+        <button class="neu-btn-full btn-blue hidden" id="btn-upload-font">Examinar fuente (.ttf)</button>
+
+        <div class="neu-separator"></div>
+
+        <div class="neu-row-inline" style="width: 100%;">
+          <div class="neu-info">
+            <strong>Color de Tinta</strong>
+            <small>Pigmento cromático de escritura</small>
+          </div>
+          <div class="neu-color-well">
+            <input type="color" id="input-ink-color" value="#151515">
+          </div>
+        </div>
       </div>
 
-      <div class="noir-row-action" style="border-top: 1px solid var(--surface-border); padding-top: 14px;">
-        <div class="noir-info-text">
-          <strong>Color de la tinta</strong>
-          <small>Tono de escritura predeterminado</small>
+      <!-- CONTROLES DE TAMAÑO Y POSICIÓN DEL TEXTO -->
+      <div class="neu-card neu-card-col">
+        <div class="neu-info" style="width: 100%;">
+          <strong>Ajustes de Tamaño y Posición</strong>
         </div>
-        <div class="noir-color-wrapper">
-          <input type="color" id="input-ink-color" value="#151515">
+
+        <!-- Tamaño de texto -->
+        <div class="neu-slider-group" style="width: 100%;">
+          <div class="neu-row-inline" style="margin-bottom: 4px;">
+            <span style="font-size: 12.5px;">Tamaño de Fuente</span>
+            <span id="text-size-val" style="font-size: 12px; color: var(--neu-accent);">10%</span>
+          </div>
+          <input type="range" id="input-text-size" min="4" max="30" step="0.5" value="10" class="neu-range">
         </div>
+
+        <!-- Posición Horizontal X -->
+        <div class="neu-slider-group" style="width: 100%;">
+          <div class="neu-row-inline" style="margin-bottom: 4px;">
+            <span style="font-size: 12.5px;">Posición Horizontal (X)</span>
+            <span id="text-posx-val" style="font-size: 12px; color: var(--neu-accent);">48.8%</span>
+          </div>
+          <input type="range" id="input-text-posx" min="0" max="100" step="0.5" value="48.8" class="neu-range">
+        </div>
+
+        <!-- Posición Vertical Y -->
+        <div class="neu-slider-group" style="width: 100%;">
+          <div class="neu-row-inline" style="margin-bottom: 4px;">
+            <span style="font-size: 12.5px;">Posición Vertical (Y)</span>
+            <span id="text-posy-val" style="font-size: 12px; color: var(--neu-accent);">46.4%</span>
+          </div>
+          <input type="range" id="input-text-posy" min="0" max="100" step="0.5" value="46.4" class="neu-range">
+        </div>
+
       </div>
+
     </div>
-
-    <button class="noir-btn-primary" id="btn-start-trick">Iniciar Simulación</button>
   </section>
 
 
@@ -201,7 +293,7 @@
 
         <footer class="gallery-bottom-bar">
           <button class="gallery-action-btn" aria-label="Compartir">📤</button>
-          <button class="gallery-action-btn" aria-label="Favorito">♡</button>
+          <button class="gallery-action-btn" aria-label="Favorito">❤️</button>
           <button class="gallery-action-btn" aria-label="Eliminar">🗑️</button>
         </footer>
 
