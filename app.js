@@ -2,32 +2,32 @@
   'use strict';
 
   /* =========================================================================
-   * 1. MAPEO DE APLICACIONES (ANDROID / IOS)
+   * 1. MAPEO DE APLICACIONES (ANDROID / IOS) CON RUTAS CORREGIDAS
    * ========================================================================= */
   const SYSTEM_APPS = [
-    { id: 'mail', name: 'Mail', icon: { android: 'assets/icons/Android/mail.png', ios: 'assets/icons/IOS/ios14_mail.png' }, page: 0 },
-    { id: 'maps', name: 'Maps', icon: { android: 'assets/icons/Android/maps.png', ios: 'assets/icons/IOS/ios14_maps.png' }, page: 0 },
-    { id: 'gallery', name: 'Fotos', icon: { android: 'assets/icons/Android/gallery.png', ios: 'assets/icons/IOS/ios14_photos.png' }, page: 0, isTrigger: true },
-    { id: 'whatsapp', name: 'WhatsApp', icon: { android: 'assets/icons/Android/whatsapp.png', ios: 'assets/icons/IOS/ios14_whatsapp.png' }, page: 0 },
-    { id: 'instagram', name: 'Instagram', icon: { android: 'assets/icons/Android/instagram.png', ios: 'assets/icons/IOS/ios14_instagram.png' }, page: 0 },
-    { id: 'telegram', name: 'Telegram', icon: { android: 'assets/icons/Android/telegram.png', ios: 'assets/icons/IOS/ios14_telegram.png' }, page: 0 },
-    { id: 'calendar', name: 'Calendario', icon: { android: 'assets/icons/Android/calendar.png', ios: 'assets/icons/IOS/ios14_calendar.png' }, page: 0 },
-    { id: 'settings', name: 'Ajustes', icon: { android: 'assets/icons/Android/settings.png', ios: 'assets/icons/IOS/ios14_settings.png' }, page: 0, isSettings: true },
+    { id: 'mail', name: 'Mail', icon: { android: './assets/icons/Android/mail.png', ios: './assets/icons/IOS/ios14_mail.png' }, page: 0 },
+    { id: 'maps', name: 'Maps', icon: { android: './assets/icons/Android/maps.png', ios: './assets/icons/IOS/ios14_maps.png' }, page: 0 },
+    { id: 'gallery', name: 'Fotos', icon: { android: './assets/icons/Android/gallery.png', ios: './assets/icons/IOS/ios14_photos.png' }, page: 0, isTrigger: true },
+    { id: 'whatsapp', name: 'WhatsApp', icon: { android: './assets/icons/Android/whatsapp.png', ios: './assets/icons/IOS/ios14_whatsapp.png' }, page: 0 },
+    { id: 'instagram', name: 'Instagram', icon: { android: './assets/icons/Android/instagram.png', ios: './assets/icons/IOS/ios14_instagram.png' }, page: 0 },
+    { id: 'telegram', name: 'Telegram', icon: { android: './assets/icons/Android/telegram.png', ios: './assets/icons/IOS/ios14_telegram.png' }, page: 0 },
+    { id: 'calendar', name: 'Calendario', icon: { android: './assets/icons/Android/calendar.png', ios: './assets/icons/IOS/ios14_calendar.png' }, page: 0 },
+    { id: 'settings', name: 'Ajustes', icon: { android: './assets/icons/Android/settings.png', ios: './assets/icons/IOS/ios14_settings.png' }, page: 0, isSettings: true },
 
-    { id: 'files', name: 'Archivos', icon: { android: 'assets/icons/Android/files.png', ios: 'assets/icons/IOS/ios14_files.png' }, page: 1 },
-    { id: 'notes', name: 'Notas', icon: { android: 'assets/icons/Android/notes.png', ios: 'assets/icons/IOS/ios14_notes.png' }, page: 1 },
-    { id: 'calculator', name: 'Calculadora', icon: { android: 'assets/icons/Android/calculator.png', ios: 'assets/icons/IOS/ios14_calculator.png' }, page: 1 },
-    { id: 'contacts', name: 'Contactos', icon: { android: 'assets/icons/Android/contacts.png', ios: 'assets/icons/IOS/ios14_contacts.png' }, page: 1 },
-    { id: 'clock', name: 'Reloj', icon: { android: 'assets/icons/Android/clock.png', ios: 'assets/icons/IOS/ios14_clock.png' }, page: 1 },
+    { id: 'files', name: 'Archivos', icon: { android: './assets/icons/Android/files.png', ios: './assets/icons/IOS/ios14_files.png' }, page: 1 },
+    { id: 'notes', name: 'Notas', icon: { android: './assets/icons/Android/notes.png', ios: './assets/icons/IOS/ios14_notes.png' }, page: 1 },
+    { id: 'calculator', name: 'Calculadora', icon: { android: './assets/icons/Android/calculator.png', ios: './assets/icons/IOS/ios14_calculator.png' }, page: 1 },
+    { id: 'contacts', name: 'Contactos', icon: { android: './assets/icons/Android/contacts.png', ios: './assets/icons/IOS/ios14_contacts.png' }, page: 1 },
+    { id: 'clock', name: 'Reloj', icon: { android: './assets/icons/Android/clock.png', ios: './assets/icons/IOS/ios14_clock.png' }, page: 1 },
 
-    { id: 'youtube', name: 'YouTube', icon: { android: 'assets/icons/Android/youtube.png', ios: 'assets/icons/IOS/ios14_youtube.png' }, page: 2 },
-    { id: 'spotify', name: 'Spotify', icon: { android: 'assets/icons/Android/spotify.png', ios: 'assets/icons/IOS/ios14_spotify.png' }, page: 2 },
-    { id: 'tinder', name: 'Tinder', icon: { android: 'assets/icons/Android/tinder.png', ios: 'assets/icons/IOS/ios14_tinder.png' }, page: 2 },
+    { id: 'youtube', name: 'YouTube', icon: { android: './assets/icons/Android/youtube.png', ios: './assets/icons/IOS/ios14_youtube.png' }, page: 2 },
+    { id: 'spotify', name: 'Spotify', icon: { android: './assets/icons/Android/spotify.png', ios: './assets/icons/IOS/ios14_spotify.png' }, page: 2 },
+    { id: 'tinder', name: 'Tinder', icon: { android: './assets/icons/Android/tinder.png', ios: './assets/icons/IOS/ios14_tinder.png' }, page: 2 },
 
-    { id: 'phone', name: 'Teléfono', icon: { android: 'assets/icons/Android/phone.png', ios: 'assets/icons/IOS/ios14_phone.png' }, isDock: true },
-    { id: 'messages', name: 'Mensajes', icon: { android: 'assets/icons/Android/messages.png', ios: 'assets/icons/IOS/ios14_messages.png' }, isDock: true },
-    { id: 'browser', name: 'Safari', icon: { android: 'assets/icons/Android/browser.png', ios: 'assets/icons/IOS/ios14_safari.png' }, isDock: true },
-    { id: 'camera', name: 'Cámara', icon: { android: 'assets/icons/Android/camera.png', ios: 'assets/icons/IOS/ios14_camera.png' }, isDock: true }
+    { id: 'phone', name: 'Teléfono', icon: { android: './assets/icons/Android/phone.png', ios: './assets/icons/IOS/ios14_phone.png' }, isDock: true },
+    { id: 'messages', name: 'Mensajes', icon: { android: './assets/icons/Android/messages.png', ios: './assets/icons/IOS/ios14_messages.png' }, isDock: true },
+    { id: 'browser', name: 'Safari', icon: { android: './assets/icons/Android/browser.png', ios: './assets/icons/IOS/ios14_safari.png' }, isDock: true },
+    { id: 'camera', name: 'Cámara', icon: { android: './assets/icons/Android/camera.png', ios: './assets/icons/IOS/ios14_camera.png' }, isDock: true }
   ];
 
   /* =========================================================================

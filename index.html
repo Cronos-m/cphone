@@ -4,12 +4,19 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
   <meta name="theme-color" content="#121217">
-  <title>Mental Picture PWA</title>
   
-<link rel="icon" type="image/png" href="./icon.png">
-<link rel="apple-touch-icon" href="./icon.png">
-<link rel="manifest" href="./manifest.json">
-<link rel="stylesheet" href="./styles.css">
+  <!-- Metaetiquetas para pantalla completa móvil y PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <title>Cphone</title>
+  
+  <link rel="icon" type="image/png" href="./icon.png">
+  <link rel="apple-touch-icon" href="./icon.png">
+  <link rel="manifest" href="./manifest.json">
+  
+  <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
 
@@ -66,7 +73,7 @@
       </div>
 
       <!-- Botón de Inicio en Verde -->
-      <button class="neu-btn-submit btn-green" id="btn-start-trick">Iniciar</button>
+      <button class="neu-btn-submit btn-green" id="btn-start-trick">Iniciar Simulación</button>
 
     </div>
   </section>
@@ -287,7 +294,7 @@
         </header>
 
         <div class="gallery-stage" id="gallery-stage">
-          <img id="revealed-photo-img" src="assets/demo.jpg" alt="Foto Revelada">
+          <img id="revealed-photo-img" src="./assets/demo.jpg" alt="Foto Revelada">
         </div>
 
         <footer class="gallery-bottom-bar">
@@ -305,6 +312,6 @@
 
 </div>
 
-<script src="app.js" defer></script>
+<script src="./app.js" defer></script>
 </body>
 </html>
