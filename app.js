@@ -1,0 +1,436 @@
+(() => {
+  'use strict';
+
+  /* =========================================================================
+   * 1. MAPEO DE APLICACIONES (ANDROID / IOS)
+   * ========================================================================= */
+  const SYSTEM_APPS = [
+    { id: 'mail', name: 'Mail', icon: { android: 'assets/icons/Android/mail.png', ios: 'assets/icons/IOS/ios14_mail.png' }, page: 0 },
+    { id: 'maps', name: 'Maps', icon: { android: 'assets/icons/Android/maps.png', ios: 'assets/icons/IOS/ios14_maps.png' }, page: 0 },
+    { id: 'gallery', name: 'Fotos', icon: { android: 'assets/icons/Android/gallery.png', ios: 'assets/icons/IOS/ios14_photos.png' }, page: 0, isTrigger: true },
+    { id: 'whatsapp', name: 'WhatsApp', icon: { android: 'assets/icons/Android/whatsapp.png', ios: 'assets/icons/IOS/ios14_whatsapp.png' }, page: 0 },
+    { id: 'instagram', name: 'Instagram', icon: { android: 'assets/icons/Android/instagram.png', ios: 'assets/icons/IOS/ios14_instagram.png' }, page: 0 },
+    { id: 'telegram', name: 'Telegram', icon: { android: 'assets/icons/Android/telegram.png', ios: 'assets/icons/IOS/ios14_telegram.png' }, page: 0 },
+    { id: 'calendar', name: 'Calendario', icon: { android: 'assets/icons/Android/calendar.png', ios: 'assets/icons/IOS/ios14_calendar.png' }, page: 0 },
+    { id: 'settings', name: 'Ajustes', icon: { android: 'assets/icons/Android/settings.png', ios: 'assets/icons/IOS/ios14_settings.png' }, page: 0, isSettings: true },
+
+    { id: 'files', name: 'Archivos', icon: { android: 'assets/icons/Android/files.png', ios: 'assets/icons/IOS/ios14_files.png' }, page: 1 },
+    { id: 'notes', name: 'Notas', icon: { android: 'assets/icons/Android/notes.png', ios: 'assets/icons/IOS/ios14_notes.png' }, page: 1 },
+    { id: 'calculator', name: 'Calculadora', icon: { android: 'assets/icons/Android/calculator.png', ios: 'assets/icons/IOS/ios14_calculator.png' }, page: 1 },
+    { id: 'contacts', name: 'Contactos', icon: { android: 'assets/icons/Android/contacts.png', ios: 'assets/icons/IOS/ios14_contacts.png' }, page: 1 },
+    { id: 'clock', name: 'Reloj', icon: { android: 'assets/icons/Android/clock.png', ios: 'assets/icons/IOS/ios14_clock.png' }, page: 1 },
+
+    { id: 'youtube', name: 'YouTube', icon: { android: 'assets/icons/Android/youtube.png', ios: 'assets/icons/IOS/ios14_youtube.png' }, page: 2 },
+    { id: 'spotify', name: 'Spotify', icon: { android: 'assets/icons/Android/spotify.png', ios: 'assets/icons/IOS/ios14_spotify.png' }, page: 2 },
+    { id: 'tinder', name: 'Tinder', icon: { android: 'assets/icons/Android/tinder.png', ios: 'assets/icons/IOS/ios14_tinder.png' }, page: 2 },
+
+    { id: 'phone', name: 'Teléfono', icon: { android: 'assets/icons/Android/phone.png', ios: 'assets/icons/IOS/ios14_phone.png' }, isDock: true },
+    { id: 'messages', name: 'Mensajes', icon: { android: 'assets/icons/Android/messages.png', ios: 'assets/icons/IOS/ios14_messages.png' }, isDock: true },
+    { id: 'browser', name: 'Safari', icon: { android: 'assets/icons/Android/browser.png', ios: 'assets/icons/IOS/ios14_safari.png' }, isDock: true },
+    { id: 'camera', name: 'Cámara', icon: { android: 'assets/icons/Android/camera.png', ios: 'assets/icons/IOS/ios14_camera.png' }, isDock: true }
+  ];
+
+  /* =========================================================================
+   * 2. ESTADO GLOBAL
+   * ========================================================================= */
+  const state = {
+    os: 'ios',
+    mode: 'numbers',
+    pinInput: '',
+    secretResult: { kind: 'num', text: '7543' },
+    currentPage: 0,
+    
+    bgImageSrc: null,
+    photoSourceSrc: 'assets/demo.jpg',
+    fontName: 'CustomHandwriting',
+    inkColor: '#151515',
+    
+    photoConfig: {
+      x: 48.8,
+      y: 46.4,
+      size: 10,
+      rot: 0
+    }
+  };
+
+  const $ = id => document.getElementById(id);
+
+  /* =========================================================================
+   * 3. DOM ELEMENTS
+   * ========================================================================= */
+  const DOM = {
+    screenSettings: $('screen-settings'),
+    screenPhone: $('screen-phone'),
+    phoneFrameContainer: $('phone-frame-container'),
+    layerLock: $('layer-lock'),
+    layerPin: $('layer-pin'),
+    layerHome: $('layer-home'),
+    layerGallery: $('layer-gallery'),
+    
+    btnStartTrick: $('btn-start-trick'),
+    clockStatus: $('clock-status'),
+    lockClockText: $('lock-clock-text'),
+    lockDateText: $('lock-date-text'),
+    galleryClockText: $('gallery-clock-text'),
+    swipeHintText: $('swipe-hint-text'),
+    pinTitleText: $('pin-title-text'),
+    
+    pinDotsContainer: $('pin-dots-container'),
+    keypad: $('keypad'),
+    btnPinDel: $('btn-pin-del'),
+    btnPinBack: $('btn-pin-back'),
+    
+    homeSlider: $('home-slider'),
+    pageDots: $('page-dots'),
+    dockContainer: $('dock-container'),
+    revealedPhotoImg: $('revealed-photo-img'),
+
+    inputBgFile: $('input-bg-file'),
+    btnUploadBg: $('btn-upload-bg'),
+    inputPhotoFile: $('input-photo-file'),
+    btnUploadPhoto: $('btn-upload-photo'),
+    inputFontFile: $('input-font-file'),
+    btnUploadFont: $('btn-upload-font'),
+    inputInkColor: $('input-ink-color'),
+
+    btnGalleryBack: $('btn-gallery-back'),
+    gestureBarPhotos: $('gesture-bar-photos'),
+    galleryStage: $('gallery-stage')
+  };
+
+  /* =========================================================================
+   * 4. DETECCIÓN AUTOMÁTICA SILENCIOSA
+   * ========================================================================= */
+  function detectOS() {
+    const ua = navigator.userAgent || navigator.vendor || window.opera;
+    if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) return 'ios';
+    if (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) return 'ios';
+    return 'android';
+  }
+
+  function applyOSTheme() {
+    state.os = detectOS();
+    
+    if (state.os === 'ios') {
+      DOM.phoneFrameContainer.className = 'phone-frame theme-ios';
+      if (DOM.swipeHintText) DOM.swipeHintText.textContent = 'Desliza hacia arriba para desbloquear';
+      if (DOM.pinTitleText) DOM.pinTitleText.textContent = 'Introduce el código';
+      if (DOM.btnPinBack) DOM.btnPinBack.textContent = 'Cancelar';
+    } else {
+      DOM.phoneFrameContainer.className = 'phone-frame theme-android';
+      if (DOM.swipeHintText) DOM.swipeHintText.textContent = 'Desliza para desbloquear';
+      if (DOM.pinTitleText) DOM.pinTitleText.textContent = 'Introduce tu PIN';
+      if (DOM.btnPinBack) DOM.btnPinBack.textContent = '‹ Atrás';
+    }
+
+    renderApps();
+  }
+
+  /* =========================================================================
+   * 5. RENDERIZADO DE APLICACIONES
+   * ========================================================================= */
+  function renderApps() {
+    const currentTheme = state.os;
+
+    for (let p = 0; p <= 2; p++) {
+      const grid = $(`grid-page-${p}`);
+      if (!grid) continue;
+      grid.innerHTML = '';
+
+      const pageApps = SYSTEM_APPS.filter(app => app.page === p && !app.isDock);
+      pageApps.forEach(app => {
+        const item = document.createElement('div');
+        item.className = 'app-icon-item';
+        if (app.isTrigger) item.id = 'app-photos-trigger';
+        if (app.isSettings) item.id = 'btn-goto-settings';
+
+        const iconSrc = app.icon[currentTheme] || app.icon.android;
+
+        item.innerHTML = `
+          <div class="app-icon-img"><img src="${iconSrc}" alt="${app.name}" onerror="this.src='icon.png'"></div>
+          <span class="app-icon-label">${app.name}</span>
+        `;
+        grid.appendChild(item);
+      });
+    }
+
+    if (DOM.dockContainer) {
+      DOM.dockContainer.innerHTML = '';
+      const dockApps = SYSTEM_APPS.filter(app => app.isDock);
+      dockApps.forEach(app => {
+        const item = document.createElement('div');
+        item.className = 'app-icon-item';
+        const iconSrc = app.icon[currentTheme] || app.icon.android;
+        item.innerHTML = `
+          <div class="app-icon-img"><img src="${iconSrc}" alt="${app.name}" onerror="this.src='icon.png'"></div>
+        `;
+        DOM.dockContainer.appendChild(item);
+      });
+    }
+
+    const photosTrigger = $('app-photos-trigger');
+    if (photosTrigger) {
+      photosTrigger.addEventListener('click', () => switchLayer('gallery'));
+    }
+
+    const settingsTrigger = $('btn-goto-settings');
+    if (settingsTrigger) {
+      settingsTrigger.addEventListener('click', returnToSettings);
+    }
+  }
+
+  /* =========================================================================
+   * 6. LÓGICA DEL TRUCO (PIN Y CANVAS)
+   * ========================================================================= */
+  function decodePin(pin) {
+    const d = pin.split('').map(Number);
+    if (state.mode === 'numbers') {
+      const out = d.map(n => (n === 0 ? 0 : 10 - n)).join('');
+      return { kind: 'num', text: String(parseInt(out, 10)) };
+    } else {
+      const sum = d[1] + d[2];
+      const rank = { 1: 'A', 11: 'J', 12: 'Q', 13: 'K' }[sum] || String(sum);
+      const suits = ['', '♡', '♧', '♤', '♢'];
+      const suitId = { 1: 2, 2: 1, 3: 3, 4: 4 }[d[0]] || 0;
+      return { kind: 'card', rank, suitSymbol: suits[suitId] || '' };
+    }
+  }
+
+  function generateRevealedPhoto(result) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const baseImg = new Image();
+    
+    baseImg.onload = () => {
+      canvas.width = baseImg.naturalWidth || 1080;
+      canvas.height = baseImg.naturalHeight || 1920;
+      
+      ctx.drawImage(baseImg, 0, 0);
+
+      const W = canvas.width;
+      const H = canvas.height;
+      const fs = Math.max(16, (state.photoConfig.size / 100) * W);
+      
+      ctx.save();
+      ctx.translate((state.photoConfig.x / 100) * W, (state.photoConfig.y / 100) * H);
+      ctx.rotate((state.photoConfig.rot * Math.PI) / 180);
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.globalAlpha = 0.94;
+      
+      ctx.font = `${fs}px "${state.fontName}", sans-serif`;
+      ctx.fillStyle = state.inkColor;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      const textToDraw = result.kind === 'num' ? result.text : `${result.rank}${result.suitSymbol}`;
+      ctx.fillText(textToDraw, 0, 0);
+      ctx.restore();
+
+      DOM.revealedPhotoImg.src = canvas.toDataURL('image/jpeg', 0.92);
+    };
+
+    baseImg.src = state.photoSourceSrc;
+  }
+
+  /* =========================================================================
+   * 7. RELOJ Y FECHA
+   * ========================================================================= */
+  function updateClocks() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const mins = String(now.getMinutes()).padStart(2, '0');
+    
+    const timeStr = `${hours}:${mins}`;
+    if (DOM.clockStatus) DOM.clockStatus.textContent = timeStr;
+    if (DOM.lockClockText) DOM.lockClockText.textContent = timeStr;
+    if (DOM.galleryClockText) DOM.galleryClockText.textContent = timeStr;
+
+    const options = { weekday: 'long', day: 'numeric', month: 'long' };
+    const dateStr = now.toLocaleDateString('es-ES', options);
+    if (DOM.lockDateText) {
+      DOM.lockDateText.textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+    }
+  }
+
+  /* =========================================================================
+   * 8. NAVEGACIÓN Y TECLADO
+   * ========================================================================= */
+  function switchLayer(targetLayer) {
+    [DOM.layerLock, DOM.layerPin, DOM.layerHome, DOM.layerGallery].forEach(layer => {
+      layer.classList.add('hidden');
+    });
+
+    if (targetLayer === 'lock') DOM.layerLock.classList.remove('hidden');
+    if (targetLayer === 'pin') DOM.layerPin.classList.remove('hidden');
+    if (targetLayer === 'home') DOM.layerHome.classList.remove('hidden');
+    if (targetLayer === 'gallery') DOM.layerGallery.classList.remove('hidden');
+  }
+
+  function startTrick() {
+    applyOSTheme();
+    DOM.screenSettings.classList.remove('active');
+    DOM.screenPhone.classList.add('active');
+    state.pinInput = '';
+    updatePinDots();
+    switchLayer('lock');
+  }
+
+  function returnToSettings() {
+    DOM.screenPhone.classList.remove('active');
+    DOM.screenSettings.classList.add('active');
+  }
+
+  function updatePinDots() {
+    const dots = DOM.pinDotsContainer.querySelectorAll('span');
+    dots.forEach((dot, idx) => {
+      dot.classList.toggle('filled', idx < state.pinInput.length);
+    });
+  }
+
+  function handleKeyPress(key) {
+    if (state.pinInput.length < 4) {
+      state.pinInput += key;
+      updatePinDots();
+      if (state.pinInput.length === 4) {
+        setTimeout(processUnlock, 150);
+      }
+    }
+  }
+
+  function handleBackspace() {
+    if (state.pinInput.length > 0) {
+      state.pinInput = state.pinInput.slice(0, -1);
+      updatePinDots();
+    }
+  }
+
+  function processUnlock() {
+    if (state.pinInput.length === 4) {
+      state.secretResult = decodePin(state.pinInput);
+      generateRevealedPhoto(state.secretResult);
+      switchLayer('home');
+    }
+  }
+
+  /* =========================================================================
+   * 9. GESTOS Y EVENTOS
+   * ========================================================================= */
+  function updateHomeSlider() {
+    const translatePercent = -state.currentPage * (100 / 3);
+    DOM.homeSlider.style.transform = `translateX(${translatePercent}%)`;
+    const dots = DOM.pageDots.querySelectorAll('span');
+    dots.forEach((dot, idx) => dot.classList.toggle('active', idx === state.currentPage));
+  }
+
+  let startX = 0, currentX = 0, isDragging = false;
+  DOM.layerHome.addEventListener('touchstart', e => { startX = e.touches[0].clientX; isDragging = true; });
+  DOM.layerHome.addEventListener('touchmove', e => { if (isDragging) currentX = e.touches[0].clientX; });
+  DOM.layerHome.addEventListener('touchend', () => {
+    if (!isDragging) return;
+    isDragging = false;
+    const diffX = startX - currentX;
+    if (Math.abs(diffX) > 40) {
+      if (diffX > 0 && state.currentPage < 2) state.currentPage++;
+      else if (diffX < 0 && state.currentPage > 0) state.currentPage--;
+      updateHomeSlider();
+    }
+  });
+
+  let lastHomeClick = 0;
+  DOM.layerHome.addEventListener('click', e => {
+    if (e.target.closest('.app-icon-item') || e.target.closest('.widget-box')) return;
+    const now = Date.now();
+    if (now - lastHomeClick < 350) {
+      state.pinInput = '';
+      updatePinDots();
+      switchLayer('lock');
+    }
+    lastHomeClick = now;
+  });
+
+  DOM.btnUploadBg.addEventListener('click', () => DOM.inputBgFile.click());
+  DOM.inputBgFile.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (file) DOM.phoneFrameContainer.style.setProperty('--phone-bg', `url('${URL.createObjectURL(file)}')`);
+  });
+
+  DOM.btnUploadPhoto.addEventListener('click', () => DOM.inputPhotoFile.click());
+  DOM.inputPhotoFile.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (file) state.photoSourceSrc = URL.createObjectURL(file);
+  });
+
+  DOM.btnUploadFont.addEventListener('click', () => DOM.inputFontFile.click());
+  DOM.inputFontFile.addEventListener('change', async e => {
+    const file = e.target.files[0];
+    if (file) {
+      const customFont = new FontFace('CustomHandwriting', `url(${URL.createObjectURL(file)})`);
+      await customFont.load();
+      document.fonts.add(customFont);
+      state.fontName = 'CustomHandwriting';
+      alert('¡Fuente cargada!');
+    }
+  });
+
+  DOM.inputInkColor.addEventListener('input', e => { state.inkColor = e.target.value; });
+
+  let lockStartY = 0;
+  DOM.layerLock.addEventListener('touchstart', e => { lockStartY = e.touches[0].clientY; });
+  DOM.layerLock.addEventListener('touchend', e => {
+    if (lockStartY - e.changedTouches[0].clientY > 50) switchLayer('pin');
+  });
+  DOM.layerLock.addEventListener('click', () => switchLayer('pin'));
+
+  DOM.keypad.addEventListener('click', e => {
+    const btn = e.target.closest('.keypad-btn');
+    if (!btn) return;
+    const key = btn.dataset.key;
+    if (key) handleKeyPress(key);
+  });
+
+  DOM.btnPinDel.addEventListener('click', handleBackspace);
+  DOM.btnPinBack.addEventListener('click', () => switchLayer('lock'));
+  DOM.btnStartTrick.addEventListener('click', startTrick);
+
+  if (DOM.btnGalleryBack) {
+    DOM.btnGalleryBack.addEventListener('click', e => { e.stopPropagation(); switchLayer('home'); });
+  }
+
+  if (DOM.gestureBarPhotos) {
+    DOM.gestureBarPhotos.addEventListener('click', e => { e.stopPropagation(); switchLayer('home'); });
+  }
+
+  let clockHoldTimer;
+  const initClockHoldSecret = el => {
+    if (!el) return;
+    el.addEventListener('touchstart', e => {
+      e.stopPropagation();
+      clearTimeout(clockHoldTimer);
+      clockHoldTimer = setTimeout(() => {
+        if (navigator.vibrate) navigator.vibrate(50);
+        returnToSettings();
+      }, 2000);
+    });
+    ['touchend', 'touchcancel'].forEach(evt => el.addEventListener(evt, () => clearTimeout(clockHoldTimer)));
+  };
+
+  initClockHoldSecret(DOM.clockStatus);
+  initClockHoldSecret(DOM.lockClockText);
+
+  /* =========================================================================
+   * 10. REGISTRO SERVICE WORKER (CACHE OFFLINE INSTANTÁNEO)
+   * ========================================================================= */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+
+  /* =========================================================================
+   * 11. INICIALIZACIÓN
+   * ========================================================================= */
+  applyOSTheme();
+  updateClocks();
+  setInterval(updateClocks, 10000);
+  updateHomeSlider();
+})();
