@@ -548,7 +548,9 @@
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
+      navigator.serviceWorker.register('./sw.js', { scope: './' })
+        .then(reg => console.log('ServiceWorker registrado:', reg.scope))
+        .catch(err => console.warn('Error en ServiceWorker:', err));
     });
   }
 
