@@ -279,7 +279,7 @@
     drawPhotoOnCanvas(tempCanvas, textToDraw);
   }
 
-  function updateClocks() {
+function updateClocks() {
     const now = new Date();
     let hours = now.getHours();
     const mins = String(now.getMinutes()).padStart(2, '0');
@@ -289,10 +289,11 @@
       const hrsFormatted = String(hours).padStart(2, '0');
       timeStr = `${hrsFormatted}:${mins}`;
     } else {
-      const ampm = hours >= 12 ? ' PM' : ' AM';
+      // Convertimos a formato de 12 horas pero OMITIMOS el AM/PM por completo
       hours = hours % 12;
       hours = hours ? hours : 12;
-      timeStr = `${hours}:${mins}${ampm}`;
+      const hrsFormatted = String(hours).padStart(2, '0');
+      timeStr = `${hrsFormatted}:${mins}`; // Solo números (ej. 10:22 en lugar de 10:22 PM)
     }
 
     if (DOM.clockStatus) DOM.clockStatus.textContent = timeStr;
@@ -357,16 +358,23 @@
     }
   }
 
-  function processUnlock() {
+function processUnlock() {
     if (state.pinInput.length === 4) {
-      // Magia: Si el PIN ingresado coincide con la hora actual en formato de 4 dígitos (ej. 2145), dibuja la hora actual en lugar del número descifrado
       const now = new Date();
       const currentHours = String(now.getHours()).padStart(2, '0');
       const currentMins = String(now.getMinutes()).padStart(2, '0');
       const timePinCode = currentHours + currentMins;
 
       if (state.pinInput === timePinCode) {
-        const timeStr = state.use24Hours ? `${currentHours}:${currentMins}` : DOM.lockClockText.textContent;
+        // Dibuja estrictamente los 4 dígitos actuales de forma uniforme
+        let timeStr = '';
+        if (state.use24Hours) {
+          timeStr = `${currentHours}${currentMins}`;
+        } else {
+          let h12 = now.getHours() % 12;
+          h12 = h12 ? h12 : 12;
+          timeStr = `${String(h12).padStart(2, '0')}${currentMins}`;
+        }
         generateRevealedPhoto({ kind: 'num', text: timeStr });
       } else {
         state.secretResult = decodePin(state.pinInput);
