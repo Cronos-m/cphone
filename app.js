@@ -2,7 +2,7 @@
   'use strict';
 
   /* =========================================================================
-   * 1. MAPEO DE APLICACIONES (ANDROID / IOS) CON RUTAS CORREGIDAS
+   * 1. MAPEO DE APLICACIONES (ANDROID / IOS)
    * ========================================================================= */
   const SYSTEM_APPS = [
     { id: 'mail', name: 'Mail', icon: { android: './assets/icons/Android/mail.png', ios: './assets/icons/IOS/ios14_mail.png' }, page: 0 },
@@ -39,6 +39,7 @@
     pinInput: '',
     secretResult: { kind: 'num', text: '7543' },
     currentPage: 0,
+    use24Hours: true, // Formato de hora por defecto
     
     photoSourceSrc: './assets/demo.jpg',
     fontName: 'Cryptext25',
@@ -108,6 +109,7 @@
     inputFontFile: $('input-font-file'),
     btnUploadFont: $('btn-upload-font'),
     inputInkColor: $('input-ink-color'),
+    selectTimeFormat: $('select-time-format'), // Selector de formato de hora
 
     btnGalleryBack: $('btn-gallery-back'),
     gestureBarPhotos: $('gesture-bar-photos'),
@@ -143,7 +145,7 @@
   }
 
   /* =========================================================================
-   * 5. RENDERIZADO DE APLICACIONES
+   * 5. RENDERIZADO DE APLICACIONES (Soporte para abrir otras PWA)
    * ========================================================================= */
   function renderApps() {
     const currentTheme = state.os;
@@ -166,6 +168,12 @@
           <div class="app-icon-img"><img src="${iconSrc}" alt="${app.name}" onerror="this.src='./icon.png'"></div>
           <span class="app-icon-label">${app.name}</span>
         `;
+
+        // Ejemplo para enlazar otra PWA externa si lo deseas en un ID específico:
+        // if (app.id === 'whatsapp') {
+        //   item.addEventListener('click', () => { window.location.href = 'https://tu-otra-pwa.pages.dev'; });
+        // }
+
         grid.appendChild(item);
       });
     }
@@ -196,7 +204,7 @@
   }
 
   /* =========================================================================
-   * 6. LÓGICA DEL TRUCO (PIN Y CANVAS DE REVELACIÓN PWA)
+   * 6. LÓGICA DEL TRUCO (PIN Y CANVAS)
    * ========================================================================= */
   function decodePin(pin) {
     const d = pin.split('').map(Number);
@@ -276,14 +284,24 @@
   }
 
   /* =========================================================================
-   * 7. RELOJ Y FECHA
+   * 7. RELOJ Y FECHA (Soporte 12h / 24h)
    * ========================================================================= */
   function updateClocks() {
     const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
+    let hours = now.getHours();
     const mins = String(now.getMinutes()).padStart(2, '0');
     
-    const timeStr = `${hours}:${mins}`;
+    let timeStr = '';
+    if (state.use24Hours) {
+      const hrsFormatted = String(hours).padStart(2, '0');
+      timeStr = `${hrsFormatted}:${mins}`;
+    } else {
+      const ampm = hours >= 12 ? ' PM' : ' AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // La hora 0 es 12
+      timeStr = `${hours}:${mins}${ampm}`;
+    }
+
     if (DOM.clockStatus) DOM.clockStatus.textContent = timeStr;
     if (DOM.lockClockText) DOM.lockClockText.textContent = timeStr;
     if (DOM.galleryClockText) DOM.galleryClockText.textContent = timeStr;
@@ -430,6 +448,14 @@
       updateEditorPreview();
     }
   });
+
+  // Listener para cambiar entre formato 12h y 24h
+  if (DOM.selectTimeFormat) {
+    DOM.selectTimeFormat.addEventListener('change', e => {
+      state.use24Hours = (e.target.value === '24');
+      updateClocks();
+    });
+  }
 
   DOM.inputTextSize.addEventListener('input', e => {
     const val = e.target.value;
