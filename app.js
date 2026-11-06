@@ -1,9 +1,6 @@
 (() => {
   'use strict';
 
-  /* =========================================================================
-   * 1. MAPEO DE APLICACIONES (ANDROID / IOS)
-   * ========================================================================= */
   const SYSTEM_APPS = [
     { id: 'mail', name: 'Mail', icon: { android: './assets/icons/Android/mail.png', ios: './assets/icons/IOS/ios14_mail.png' }, page: 0 },
     { id: 'maps', name: 'Maps', icon: { android: './assets/icons/Android/maps.png', ios: './assets/icons/IOS/ios14_maps.png' }, page: 0 },
@@ -30,16 +27,13 @@
     { id: 'camera', name: 'Cámara', icon: { android: './assets/icons/Android/camera.png', ios: './assets/icons/IOS/ios14_camera.png' }, isDock: true }
   ];
 
-  /* =========================================================================
-   * 2. ESTADO GLOBAL
-   * ========================================================================= */
   const state = {
     os: 'ios',
     mode: 'numbers',
     pinInput: '',
     secretResult: { kind: 'num', text: '7543' },
     currentPage: 0,
-    use24Hours: true, // Formato de hora por defecto
+    use24Hours: true,
     
     photoSourceSrc: './assets/demo.jpg',
     fontName: 'Cryptext25',
@@ -55,9 +49,6 @@
 
   const $ = id => document.getElementById(id);
 
-  /* =========================================================================
-   * 3. ELEMENTOS DOM
-   * ========================================================================= */
   const DOM = {
     screenSettings: $('screen-settings'),
     screenPhotoEditor: $('screen-photo-editor'),
@@ -109,16 +100,13 @@
     inputFontFile: $('input-font-file'),
     btnUploadFont: $('btn-upload-font'),
     inputInkColor: $('input-ink-color'),
-    selectTimeFormat: $('select-time-format'), // Selector de formato de hora
+    selectTimeFormat: $('select-time-format'),
 
     btnGalleryBack: $('btn-gallery-back'),
     gestureBarPhotos: $('gesture-bar-photos'),
     galleryStage: $('gallery-stage')
   };
 
-  /* =========================================================================
-   * 4. DETECCIÓN AUTOMÁTICA SILENCIOSA
-   * ========================================================================= */
   function detectOS() {
     const ua = navigator.userAgent || navigator.vendor || window.opera;
     if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) return 'ios';
@@ -144,9 +132,6 @@
     renderApps();
   }
 
-  /* =========================================================================
-   * 5. RENDERIZADO DE APLICACIONES (Soporte para abrir otras PWA)
-   * ========================================================================= */
   function renderApps() {
     const currentTheme = state.os;
 
@@ -168,12 +153,6 @@
           <div class="app-icon-img"><img src="${iconSrc}" alt="${app.name}" onerror="this.src='./icon.png'"></div>
           <span class="app-icon-label">${app.name}</span>
         `;
-
-        // Ejemplo para enlazar otra PWA externa si lo deseas en un ID específico:
-        // if (app.id === 'whatsapp') {
-        //   item.addEventListener('click', () => { window.location.href = 'https://tu-otra-pwa.pages.dev'; });
-        // }
-
         grid.appendChild(item);
       });
     }
@@ -203,9 +182,6 @@
     }
   }
 
-  /* =========================================================================
-   * 6. LÓGICA DEL TRUCO (PIN Y CANVAS)
-   * ========================================================================= */
   function decodePin(pin) {
     const d = pin.split('').map(Number);
     if (state.mode === 'numbers') {
@@ -283,9 +259,6 @@
     drawPhotoOnCanvas(tempCanvas, textToDraw);
   }
 
-  /* =========================================================================
-   * 7. RELOJ Y FECHA (Soporte 12h / 24h)
-   * ========================================================================= */
   function updateClocks() {
     const now = new Date();
     let hours = now.getHours();
@@ -298,7 +271,7 @@
     } else {
       const ampm = hours >= 12 ? ' PM' : ' AM';
       hours = hours % 12;
-      hours = hours ? hours : 12; // La hora 0 es 12
+      hours = hours ? hours : 12;
       timeStr = `${hours}:${mins}${ampm}`;
     }
 
@@ -313,9 +286,6 @@
     }
   }
 
-  /* =========================================================================
-   * 8. NAVEGACIÓN Y TECLADO
-   * ========================================================================= */
   function switchLayer(targetLayer) {
     [DOM.layerLock, DOM.layerPin, DOM.layerHome, DOM.layerGallery].forEach(layer => {
       layer.classList.add('hidden');
@@ -375,9 +345,6 @@
     }
   }
 
-  /* =========================================================================
-   * 9. GESTOS Y EVENTOS
-   * ========================================================================= */
   function updateHomeSlider() {
     const translatePercent = -state.currentPage * (100 / 3);
     DOM.homeSlider.style.transform = `translateX(${translatePercent}%)`;
@@ -449,7 +416,6 @@
     }
   });
 
-  // Listener para cambiar entre formato 12h y 24h
   if (DOM.selectTimeFormat) {
     DOM.selectTimeFormat.addEventListener('change', e => {
       state.use24Hours = (e.target.value === '24');
@@ -549,9 +515,17 @@
   initClockHoldSecret(DOM.clockStatus);
   initClockHoldSecret(DOM.lockClockText);
 
-  /* =========================================================================
-   * 10. CARGA DE FUENTES Y FONDOS EN MODO PWA OFFLINE
-   * ========================================================================= */
+  // Inyección segura del icono SVG de borrar para evitar que se pierda
+  if (DOM.btnPinDel) {
+    DOM.btnPinDel.innerHTML = `
+      <svg class="delete-icon" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+        <line x1="18" y1="9" x2="12" y2="15"></line>
+        <line x1="12" y1="9" x2="18" y2="15"></line>
+      </svg>
+    `;
+  }
+
   async function initDefaults() {
     DOM.phoneFrameContainer.style.setProperty('--lock-bg', `url('./assets/lock_bg.png')`);
     DOM.phoneFrameContainer.style.setProperty('--home-bg', `url('./assets/home_bg.png')`);
@@ -580,9 +554,6 @@
     });
   }
 
-  /* =========================================================================
-   * 11. INICIALIZACIÓN
-   * ========================================================================= */
   applyOSTheme();
   initDefaults();
   updateClocks();

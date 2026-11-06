@@ -100,11 +100,6 @@ html, body {
               -3px -3px 6px var(--neu-shadow-light);
 }
 
-.neu-btn-back:active {
-  box-shadow: inset 2px 2px 4px var(--neu-shadow-dark), 
-              inset -2px -2px 4px var(--neu-shadow-light);
-}
-
 .neu-card {
   background: var(--neu-surface);
   border-radius: 16px;
@@ -219,29 +214,14 @@ html, body {
   cursor: pointer;
   box-shadow: 4px 4px 8px var(--neu-shadow-dark), 
               -4px -4px 8px var(--neu-shadow-light);
-  transition: all 0.1s ease;
 }
 
-.neu-btn-action.btn-blue, .neu-btn-full.btn-blue {
+.neu-btn-action.btn-blue {
   color: #38bdf8;
 }
 
 .neu-btn-action {
   padding: 8px 14px;
-}
-
-.neu-btn-full {
-  width: 100%;
-  padding: 10px;
-}
-
-.neu-btn-action:active, .neu-btn-full:active {
-  box-shadow: inset 2px 2px 4px var(--neu-shadow-dark), 
-              inset -2px -2px 4px var(--neu-shadow-light);
-}
-
-.neu-btn-full.hidden {
-  display: none;
 }
 
 .neu-separator {
@@ -280,6 +260,7 @@ html, body {
 }
 
 .neu-range {
+  -webkit-appearance: none;
   width: 100%;
   height: 6px;
   background: var(--neu-shadow-dark);
@@ -296,7 +277,6 @@ html, body {
   border-radius: 50%;
   background: var(--neu-accent);
   cursor: pointer;
-  box-shadow: 2px 2px 5px var(--neu-shadow-dark);
 }
 
 .neu-btn-submit.btn-green {
@@ -311,21 +291,15 @@ html, body {
   cursor: pointer;
   box-shadow: 6px 6px 12px var(--neu-shadow-dark), 
               -6px -6px 12px var(--neu-shadow-light);
-  transition: all 0.1s ease;
   margin-top: 4px;
 }
 
-.neu-btn-submit.btn-green:active {
-  box-shadow: inset 3px 3px 6px var(--neu-shadow-dark), 
-              inset -3px -3px 6px var(--neu-shadow-light);
-}
-
-/* ==================== SIMULADOR MARCO TELÉFONO ==================== */
+/* ==================== MARCO TELÉFONO ==================== */
 .phone-frame {
   position: relative;
   width: 100%;
   height: 100%;
-  background: var(--lock-bg, url('assets/lock_bg.png')) center/cover no-repeat;
+  background: var(--lock-bg, url('./assets/lock_bg.png')) center/cover no-repeat;
   display: flex;
   flex-direction: column;
 }
@@ -382,7 +356,6 @@ html, body {
   transform: scale(0.96);
 }
 
-/* 1. BLOQUEO */
 .lock-view {
   padding-top: 56px;
   padding-bottom: 24px;
@@ -455,9 +428,9 @@ html, body {
   font-size: 20px;
 }
 
-/* 2. TECLADO PIN */
+/* ==================== TECLADO PIN Y GAPS ==================== */
 .pin-view {
-  padding: 60px 24px 30px;
+  padding: 85px 24px 35px;
   justify-content: space-between;
   background: inherit;
   backdrop-filter: blur(35px);
@@ -490,11 +463,13 @@ html, body {
   color: #fff;
 }
 
+/* Controla el espacio de los puntos indicadores (dots) */
 .pin-dots {
   display: flex;
-  gap: 18px;
+  gap: 30px; /* <--- Modifica aquí la separación horizontal entre los 4 círculos */
   justify-content: center;
-  margin-top: 22px;
+  margin-top: 50px; /* <--- Distancia vertical respecto al texto superior */
+  margin-bottom: 10px;
 }
 
 .pin-dots span {
@@ -510,12 +485,13 @@ html, body {
   background: #fff;
 }
 
+/* Controla el espacio (gap) y tamaño de la cuadrícula iOS */
 .theme-ios .keypad-grid {
   display: grid;
   grid-template-columns: repeat(3, 75px);
-  gap: 16px 24px;
+  gap: 20px 24px; /* <--- [Espacio vertical] [Espacio horizontal] entre botones */
   justify-content: center;
-  margin: 0 auto;
+  margin: 20px auto 0;
 }
 
 .theme-ios .keypad-btn {
@@ -546,18 +522,29 @@ html, body {
   font-weight: 600;
 }
 
-.theme-ios .keypad-btn.action-btn {
+.theme-ios .keypad-btn.action-btn,
+.theme-android .keypad-btn.action-btn {
   background: transparent;
-  font-size: 14px;
-  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* Estilo y tamaño del icono SVG de borrar */
+.keypad-btn .delete-icon {
+  width: 26px;
+  height: 26px;
+  stroke: currentColor;
+  display: block;
+}
+
+/* Controla el espacio (gap) y tamaño de la cuadrícula Android */
 .theme-android .keypad-grid {
   display: grid;
   grid-template-columns: repeat(3, 84px);
-  gap: 12px 16px;
+  gap: 26px 26px; /* <--- [Espacio vertical] [Espacio horizontal] entre botones */
   justify-content: center;
-  margin: 0 auto;
+  margin: 20px auto 0;
 }
 
 .theme-android .keypad-btn {
@@ -599,12 +586,12 @@ html, body {
   cursor: pointer;
 }
 
-/* 3. HOME */
+/* HOME */
 .home-view {
   padding-top: 52px;
   padding-bottom: 12px;
   justify-content: space-between;
-  background: var(--home-bg, var(--lock-bg, url('assets/lock_bg.png'))) center/cover no-repeat;
+  background: var(--home-bg, var(--lock-bg, url('./assets/lock_bg.png'))) center/cover no-repeat;
 }
 
 .home-slider {
@@ -752,7 +739,6 @@ html, body {
   display: none;
 }
 
-/* 4. GALERÍA NATIVA */
 .gallery-app-view {
   background: #000;
   z-index: 40;

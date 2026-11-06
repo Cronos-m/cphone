@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
   <meta name="theme-color" content="#121217">
   
-  <!-- Metaetiquetas para pantalla completa móvil y PWA -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
@@ -22,7 +21,7 @@
 
 <div id="app" class="app-viewport">
 
-  <!-- ==================== PANTALLA 1: AJUSTES (NEUMORFISMO) ==================== -->
+  <!-- PANTALLA 1: AJUSTES -->
   <section id="screen-settings" class="screen active neu-settings-screen">
     <div class="neu-container">
       
@@ -31,19 +30,17 @@
         <p>Panel de control y activos de la ilusión</p>
       </header>
 
-      <!-- Guía de Uso & Consejos -->
       <div class="neu-card neu-card-col neu-guide-card">
         <div class="neu-info" style="width: 100%;">
           <strong>Guía de Uso & Consejos</strong>
           <ul class="neu-instructions-list">
-            <li><strong>Fondo idéntico:</strong> Usa `lock_bg.png` y `home_bg.png` o sube una captura del celular del espectador.</li>
-            <li><strong>Gestos secretos:</strong> Mantén presionado el reloj de la barra de estado superior durante 2 segundos para volver aquí.</li>
-            <li><strong>Doble toque en Home:</strong> Haz doble toque en cualquier espacio vacío para bloquear el teléfono de nuevo.</li>
+            <li><strong>Fondo idéntico:</strong> Usa `lock_bg.png` y `home_bg.png` o sube una captura del celular.</li>
+            <li><strong>Gestos secretos:</strong> Mantén presionado el reloj de la barra superior 2 segundos para volver aquí.</li>
+            <li><strong>Doble toque en Home:</strong> Bloquea el teléfono haciendo doble toque en espacio vacío.</li>
           </ul>
         </div>
       </div>
 
-      <!-- 1. Fondo de Bloqueo y PIN -->
       <div class="neu-card">
         <div class="neu-info">
           <strong>Fondo de Bloqueo & PIN</strong>
@@ -53,7 +50,6 @@
         <button class="neu-btn-action btn-blue" id="btn-upload-lockbg">Examinar</button>
       </div>
 
-      <!-- 2. Fondo de Pantalla de Inicio (Home) -->
       <div class="neu-card">
         <div class="neu-info">
           <strong>Fondo de Inicio (Home)</strong>
@@ -63,8 +59,6 @@
         <button class="neu-btn-action btn-blue" id="btn-upload-homebg">Examinar</button>
       </div>
 
-
-      <!-- Selector de Formato de Hora -->
       <div class="neu-card neu-card-col">
         <div class="neu-info" style="width: 100%;">
           <strong>Formato del Reloj</strong>
@@ -78,8 +72,6 @@
         </div>
       </div>
 
-      
-      <!-- 3. Acceso a Pantalla: Foto predicción y letra -->
       <div class="neu-card">
         <div class="neu-info">
           <strong>Foto predicción y letra</strong>
@@ -88,14 +80,12 @@
         <button class="neu-btn-action btn-blue" id="btn-open-photo-editor">Configurar</button>
       </div>
 
-      <!-- Botón de Inicio en Verde -->
       <button class="neu-btn-submit btn-green" id="btn-start-trick">Iniciar Simulación</button>
 
     </div>
   </section>
 
-
-  <!-- ==================== PANTALLA DE EDICIÓN: FOTO PREDICCIÓN Y LETRA ==================== -->
+  <!-- PANTALLA DE EDICIÓN -->
   <section id="screen-photo-editor" class="screen neu-settings-screen">
     <div class="neu-container">
       
@@ -104,14 +94,12 @@
         <h1 style="font-size: 18px;">Foto predicción y letra</h1>
       </header>
 
-      <!-- VISTA PREVIA EN TIEMPO REAL CON CANVAS -->
       <div class="neu-card neu-preview-container">
         <div class="preview-stage">
           <canvas id="editor-preview-canvas"></canvas>
         </div>
       </div>
 
-      <!-- SELECCIÓN DE IMAGEN -->
       <div class="neu-card">
         <div class="neu-info">
           <strong>Imagen Base</strong>
@@ -121,7 +109,6 @@
         <button class="neu-btn-action btn-blue" id="btn-upload-photo">Cargar Foto</button>
       </div>
 
-      <!-- CONTROLES DE TIPOGRAFÍA Y TINTA -->
       <div class="neu-card neu-card-col">
         <div class="neu-info" style="width: 100%;">
           <strong>Estilo de Tipografía</strong>
@@ -152,13 +139,11 @@
         </div>
       </div>
 
-      <!-- CONTROLES DE TAMAÑO Y POSICIÓN DEL TEXTO -->
       <div class="neu-card neu-card-col">
         <div class="neu-info" style="width: 100%;">
           <strong>Ajustes de Tamaño y Posición</strong>
         </div>
 
-        <!-- Tamaño de texto -->
         <div class="neu-slider-group" style="width: 100%;">
           <div class="neu-row-inline" style="margin-bottom: 4px;">
             <span style="font-size: 12.5px;">Tamaño de Fuente</span>
@@ -167,7 +152,6 @@
           <input type="range" id="input-text-size" min="4" max="30" step="0.5" value="10" class="neu-range">
         </div>
 
-        <!-- Posición Horizontal X -->
         <div class="neu-slider-group" style="width: 100%;">
           <div class="neu-row-inline" style="margin-bottom: 4px;">
             <span style="font-size: 12.5px;">Posición Horizontal (X)</span>
@@ -176,7 +160,6 @@
           <input type="range" id="input-text-posx" min="0" max="100" step="0.5" value="48.8" class="neu-range">
         </div>
 
-        <!-- Posición Vertical Y -->
         <div class="neu-slider-group" style="width: 100%;">
           <div class="neu-row-inline" style="margin-bottom: 4px;">
             <span style="font-size: 12.5px;">Posición Vertical (Y)</span>
@@ -190,13 +173,11 @@
     </div>
   </section>
 
-
-  <!-- ==================== PANTALLA 2: SIMULADOR HÍBRIDO (iOS / ANDROID) ==================== -->
+  <!-- PANTALLA 2: SIMULADOR TELÉFONO -->
   <section id="screen-phone" class="screen">
     
     <div class="phone-frame theme-ios" id="phone-frame-container">
       
-      <!-- BARRA DE ESTADO / DYNAMIC ISLAND -->
       <div class="status-bar" id="phone-status-bar">
         <span id="clock-status">09:41</span>
         <div class="notch-island" id="status-notch"></div>
@@ -206,7 +187,6 @@
         </div>
       </div>
 
-      <!-- CAPA A: PANTALLA DE BLOQUEO -->
       <div id="layer-lock" class="phone-layer lock-view">
         <div class="lock-header-container">
           <div class="lock-lock-icon">🔒</div>
@@ -223,7 +203,6 @@
         </div>
       </div>
 
-      <!-- CAPA B: PANTALLA DE PIN (PASSCODE) -->
       <div id="layer-pin" class="phone-layer pin-view hidden">
         <div class="pin-header">
           <div class="pin-lock-icon">🔒</div>
@@ -245,7 +224,8 @@
           <button class="keypad-btn" data-key="9">9<small>WXYZ</small></button>
           <button class="keypad-btn action-btn empty-action"></button>
           <button class="keypad-btn" data-key="0">0<small>&nbsp;</small></button>
-          <button class="keypad-btn action-btn" id="btn-pin-del">Borrar</button>
+          <!-- El icono se inyectará de forma segura desde JS para evitar que se sobrescriba -->
+          <button class="keypad-btn action-btn" id="btn-pin-del" aria-label="Borrar"></button>
         </div>
 
         <div class="pin-footer">
@@ -254,9 +234,7 @@
         </div>
       </div>
 
-      <!-- CAPA C: PANTALLA HOME -->
       <div id="layer-home" class="phone-layer home-view hidden">
-        
         <div class="home-slider" id="home-slider">
           <div class="home-page" id="page-0">
             <div class="ios-widget-row">
@@ -295,10 +273,8 @@
 
         <div class="dock-bar" id="dock-container"></div>
         <div class="ios-home-indicator" id="home-indicator"></div>
-
       </div>
 
-      <!-- CAPA D: GALERÍA -->
       <div id="layer-gallery" class="phone-layer gallery-app-view hidden">
         <header class="gallery-top-bar">
           <button id="btn-gallery-back" class="gallery-icon-btn" aria-label="Atrás">‹</button>
