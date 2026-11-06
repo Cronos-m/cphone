@@ -27,23 +27,26 @@
     { id: 'camera', name: 'Cámara', icon: { android: './assets/icons/Android/camera.png', ios: './assets/icons/IOS/ios14_camera.png' }, isDock: true }
   ];
 
+  // Recuperación persistente desde localStorage
+  const savedConfig = JSON.parse(localStorage.getItem('cphone_config') || '{}');
+
   const state = {
     os: 'ios',
     mode: 'numbers',
     pinInput: '',
     secretResult: { kind: 'num', text: '7543' },
     currentPage: 0,
-    use24Hours: true,
+    use24Hours: savedConfig.use24Hours !== undefined ? savedConfig.use24Hours : true,
     
     photoSourceSrc: localStorage.getItem('cphone_custom_photo') || './assets/demo.jpg',
-    fontName: 'Cryptext25',
-    inkColor: '#151515',
+    fontName: savedConfig.fontName || 'Cryptext25',
+    inkColor: savedConfig.inkColor || '#151515',
     
     photoConfig: {
-      x: 48.8,
-      y: 46.4,
-      size: 10,
-      rot: 0
+      x: savedConfig.x !== undefined ? savedConfig.x : 48.8,
+      y: savedConfig.y !== undefined ? savedConfig.y : 46.4,
+      size: savedConfig.size !== undefined ? savedConfig.size : 10,
+      rot: savedConfig.rot !== undefined ? savedConfig.rot : 0
     }
   };
 
@@ -106,6 +109,22 @@
     gestureBarPhotos: $('gesture-bar-photos'),
     galleryStage: $('gallery-stage')
   };
+
+  function saveConfigToStorage() {
+    try {
+      localStorage.setItem('cphone_config', JSON.stringify({
+        use24Hours: state.use24Hours,
+        fontName: state.fontName,
+        inkColor: state.inkColor,
+        x: state.photoConfig.x,
+        y: state.photoConfig.y,
+        size: state.photoConfig.size,
+        rot: state.photoConfig.rot
+      }));
+    } catch (e) {
+      console.warn('Error guardando configuración', e);
+    }
+  }
 
   function detectOS() {
     const ua = navigator.userAgent || navigator.vendor || window.opera;
@@ -247,22 +266,12 @@
     baseImg.src = state.photoSourceSrc;
   }
 
-  function updateEditorPreview() {
+function updateEditorPreview() {
     if (DOM.editorPreviewCanvas) {
-      // Obtiene la hora actual formateada según 12h/24h para mostrarla idéntica en la vista previa
-      const now = new Date();
-      let hours = now.getHours();
-      const mins = String(now.getMinutes()).padStart(2, '0');
-      let sampleTime = '';
-      if (state.use24Hours) {
-        sampleTime = `${String(hours).padStart(2, '0')}:${mins}`;
-      } else {
-        const ampm = hours >= 12 ? ' PM' : ' AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12;
-        sampleTime = `${hours}:${mins}${ampm}`;
-      }
-      drawPhotoOnCanvas(DOM.editorPreviewCanvas, sampleTime);
+      // Texto fijo definido directamente en el código para la previsualización
+      const textoEjemploFijo = "1234"; 
+      
+      drawPhotoOnCanvas(DOM.editorPreviewCanvas, textoEjemploFijo);
     }
   }
 
@@ -279,7 +288,7 @@
     drawPhotoOnCanvas(tempCanvas, textToDraw);
   }
 
-function updateClocks() {
+  function updateClocks() {
     const now = new Date();
     let hours = now.getHours();
     const mins = String(now.getMinutes()).padStart(2, '0');
@@ -289,11 +298,10 @@ function updateClocks() {
       const hrsFormatted = String(hours).padStart(2, '0');
       timeStr = `${hrsFormatted}:${mins}`;
     } else {
-      // Convertimos a formato de 12 horas pero OMITIMOS el AM/PM por completo
       hours = hours % 12;
       hours = hours ? hours : 12;
       const hrsFormatted = String(hours).padStart(2, '0');
-      timeStr = `${hrsFormatted}:${mins}`; // Solo números (ej. 10:22 en lugar de 10:22 PM)
+      timeStr = `${hrsFormatted}:${mins}`;
     }
 
     if (DOM.clockStatus) DOM.clockStatus.textContent = timeStr;
@@ -358,7 +366,7 @@ function updateClocks() {
     }
   }
 
-function processUnlock() {
+  function processUnlock() {
     if (state.pinInput.length === 4) {
       const now = new Date();
       const currentHours = String(now.getHours()).padStart(2, '0');
@@ -366,7 +374,6 @@ function processUnlock() {
       const timePinCode = currentHours + currentMins;
 
       if (state.pinInput === timePinCode) {
-        // Dibuja estrictamente los 4 dígitos actuales de forma uniforme
         let timeStr = '';
         if (state.use24Hours) {
           timeStr = `${currentHours}${currentMins}`;
@@ -417,9 +424,73 @@ function processUnlock() {
     lastHomeClick = now;
   });
 
+  // Funcionalidad de ARRASTRAR EL TEXTO EN EL CANVAS
+  let isDraggingText = false;
+  const canvas = DOM.editorPreviewCanvas;
+
+  function getCanvasTouchPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+    const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return {
+      x: ((clientX - rect.left) * scaleX / canvas.width) * 100,
+      y: ((clientY - rect.top) * scaleY / canvas.height) * 100
+    };
+  }
+
+  canvas.addEventListener('mousedown', () => isDraggingText = true);
+  canvas.addEventListener('touchstart', () => isDraggingText = true);
+
+  window.addEventListener('mousemove', e => {
+    if (!isDraggingText) return;
+    const pos = getCanvasTouchPos(e);
+    state.photoConfig.x = Math.max(0, Math.min(100, parseFloat(pos.x.toFixed(1))));
+    state.photoConfig.y = Math.max(0, Math.min(100, parseFloat(pos.y.toFixed(1))));
+    
+    DOM.inputTextPosX.value = state.photoConfig.x;
+    DOM.textPosXVal.textContent = `${state.photoConfig.x}%`;
+    DOM.inputTextPosY.value = state.photoConfig.y;
+    DOM.textPosYVal.textContent = `${state.photoConfig.y}%`;
+
+    updateEditorPreview();
+    saveConfigToStorage();
+  });
+
+  canvas.addEventListener('touchmove', e => {
+    if (!isDraggingText) return;
+    const pos = getCanvasTouchPos(e);
+    state.photoConfig.x = Math.max(0, Math.min(100, parseFloat(pos.x.toFixed(1))));
+    state.photoConfig.y = Math.max(0, Math.min(100, parseFloat(pos.y.toFixed(1))));
+    
+    DOM.inputTextPosX.value = state.photoConfig.x;
+    DOM.textPosXVal.textContent = `${state.photoConfig.x}%`;
+    DOM.inputTextPosY.value = state.photoConfig.y;
+    DOM.textPosYVal.textContent = `${state.photoConfig.y}%`;
+
+    updateEditorPreview();
+    saveConfigToStorage();
+  });
+
+  window.addEventListener('mouseup', () => isDraggingText = false);
+  window.addEventListener('touchend', () => isDraggingText = false);
+
   DOM.btnOpenPhotoEditor.addEventListener('click', () => {
     DOM.screenSettings.classList.remove('active');
     DOM.screenPhotoEditor.classList.add('active');
+    
+    // Sincronizar valores actuales en la UI de sliders
+    DOM.inputTextSize.value = state.photoConfig.size;
+    DOM.textSizeVal.textContent = `${state.photoConfig.size}%`;
+    DOM.inputTextPosX.value = state.photoConfig.x;
+    DOM.textPosXVal.textContent = `${state.photoConfig.x}%`;
+    DOM.inputTextPosY.value = state.photoConfig.y;
+    DOM.textPosYVal.textContent = `${state.photoConfig.y}%`;
+    if (DOM.selectTimeFormat) DOM.selectTimeFormat.value = state.use24Hours ? '24' : '12';
+    if (DOM.selectFontFamily && state.fontName !== 'CustomUserFont') DOM.selectFontFamily.value = state.fontName;
+    if (DOM.inputInkColor) DOM.inputInkColor.value = state.inkColor;
+
     updateEditorPreview();
   });
 
@@ -434,6 +505,7 @@ function processUnlock() {
     if (file) {
       const url = URL.createObjectURL(file);
       DOM.phoneFrameContainer.style.setProperty('--lock-bg', `url('${url}')`);
+      localStorage.setItem('cphone_lock_bg', url);
     }
   });
 
@@ -443,6 +515,7 @@ function processUnlock() {
     if (file) {
       const url = URL.createObjectURL(file);
       DOM.phoneFrameContainer.style.setProperty('--home-bg', `url('${url}')`);
+      localStorage.setItem('cphone_home_bg', url);
     }
   });
 
@@ -469,6 +542,7 @@ function processUnlock() {
       state.use24Hours = (e.target.value === '24');
       updateClocks();
       updateEditorPreview();
+      saveConfigToStorage();
     });
   }
 
@@ -477,6 +551,7 @@ function processUnlock() {
     state.photoConfig.size = parseFloat(val);
     DOM.textSizeVal.textContent = `${val}%`;
     updateEditorPreview();
+    saveConfigToStorage();
   });
 
   DOM.inputTextPosX.addEventListener('input', e => {
@@ -484,6 +559,7 @@ function processUnlock() {
     state.photoConfig.x = parseFloat(val);
     DOM.textPosXVal.textContent = `${val}%`;
     updateEditorPreview();
+    saveConfigToStorage();
   });
 
   DOM.inputTextPosY.addEventListener('input', e => {
@@ -491,6 +567,7 @@ function processUnlock() {
     state.photoConfig.y = parseFloat(val);
     DOM.textPosYVal.textContent = `${val}%`;
     updateEditorPreview();
+    saveConfigToStorage();
   });
 
   DOM.selectFontFamily.addEventListener('change', e => {
@@ -501,6 +578,7 @@ function processUnlock() {
       DOM.btnUploadFont.classList.add('hidden');
       state.fontName = val;
       updateEditorPreview();
+      saveConfigToStorage();
     }
   });
 
@@ -513,12 +591,14 @@ function processUnlock() {
       document.fonts.add(customFont);
       state.fontName = 'CustomUserFont';
       updateEditorPreview();
+      saveConfigToStorage();
     }
   });
 
   DOM.inputInkColor.addEventListener('input', e => { 
     state.inkColor = e.target.value;
     updateEditorPreview();
+    saveConfigToStorage();
   });
 
   let lockStartY = 0;
@@ -575,8 +655,11 @@ function processUnlock() {
   }
 
   async function initDefaults() {
-    DOM.phoneFrameContainer.style.setProperty('--lock-bg', `url('./assets/lock_bg.png')`);
-    DOM.phoneFrameContainer.style.setProperty('--home-bg', `url('./assets/home_bg.png')`);
+    const savedLockBg = localStorage.getItem('cphone_lock_bg');
+    const savedHomeBg = localStorage.getItem('cphone_home_bg');
+
+    DOM.phoneFrameContainer.style.setProperty('--lock-bg', savedLockBg ? `url('${savedLockBg}')` : `url('./assets/lock_bg.png')`);
+    DOM.phoneFrameContainer.style.setProperty('--home-bg', savedHomeBg ? `url('${savedHomeBg}')` : `url('./assets/home_bg.png')`);
 
     try {
       const font2 = new FontFace('Cryptext2', 'url("./assets/fonts/Cryptext 2 - Font.ttf")');
@@ -587,8 +670,6 @@ function processUnlock() {
       
       document.fonts.add(loadedFont2);
       document.fonts.add(loadedFont25);
-      
-      state.fontName = 'Cryptext25';
     } catch (e) {
       console.warn('PWA Offline: Cargando con fuentes de sistema como respaldo.');
     }

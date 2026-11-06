@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cphone-cache-v6';
+const CACHE_NAME = 'cphone-cache-v7';
 const ASSETS = [
   './',
   './index.html',
