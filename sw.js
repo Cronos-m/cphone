@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cphone-cache-v1';
+const CACHE_NAME = 'cphone-cache-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -11,7 +11,10 @@ const ASSETS = [
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
+      // Usamos addAll de forma segura o omitimos archivos que puedan dar 404
+      return cache.addAll(ASSETS).catch(err => {
+        console.warn('Algunos recursos del caché fallaron al precargarse:', err);
+      });
     })
   );
   self.skipWaiting();
@@ -35,7 +38,12 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
-      return cachedResponse || fetch(e.request);
+      return cachedResponse || fetch(e.request).catch(() => {
+        // Fallback opcional si se pierde la conexión offline
+        if (e.request.mode === 'navigate') {
+          return caches.match('./index.html');
+        }
+      });
     })
   );
 });
