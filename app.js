@@ -35,7 +35,7 @@
     currentPage: 0,
     use24Hours: true,
     
-    photoSourceSrc: './assets/demo.jpg',
+    photoSourceSrc: localStorage.getItem('cphone_custom_photo') || './assets/demo.jpg',
     fontName: 'Cryptext25',
     inkColor: '#151515',
     
@@ -249,13 +249,33 @@
 
   function updateEditorPreview() {
     if (DOM.editorPreviewCanvas) {
-      drawPhotoOnCanvas(DOM.editorPreviewCanvas, '7543');
+      // Obtiene la hora actual formateada según 12h/24h para mostrarla idéntica en la vista previa
+      const now = new Date();
+      let hours = now.getHours();
+      const mins = String(now.getMinutes()).padStart(2, '0');
+      let sampleTime = '';
+      if (state.use24Hours) {
+        sampleTime = `${String(hours).padStart(2, '0')}:${mins}`;
+      } else {
+        const ampm = hours >= 12 ? ' PM' : ' AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        sampleTime = `${hours}:${mins}${ampm}`;
+      }
+      drawPhotoOnCanvas(DOM.editorPreviewCanvas, sampleTime);
     }
   }
 
   function generateRevealedPhoto(result) {
     const tempCanvas = document.createElement('canvas');
-    const textToDraw = result.kind === 'num' ? result.text : `${result.rank}${result.suitSymbol}`;
+    let textToDraw = '';
+    
+    if (result.kind === 'num') {
+      textToDraw = result.text;
+    } else {
+      textToDraw = `${result.rank}${result.suitSymbol}`;
+    }
+    
     drawPhotoOnCanvas(tempCanvas, textToDraw);
   }
 
@@ -339,8 +359,19 @@
 
   function processUnlock() {
     if (state.pinInput.length === 4) {
-      state.secretResult = decodePin(state.pinInput);
-      generateRevealedPhoto(state.secretResult);
+      // Magia: Si el PIN ingresado coincide con la hora actual en formato de 4 dígitos (ej. 2145), dibuja la hora actual en lugar del número descifrado
+      const now = new Date();
+      const currentHours = String(now.getHours()).padStart(2, '0');
+      const currentMins = String(now.getMinutes()).padStart(2, '0');
+      const timePinCode = currentHours + currentMins;
+
+      if (state.pinInput === timePinCode) {
+        const timeStr = state.use24Hours ? `${currentHours}:${currentMins}` : DOM.lockClockText.textContent;
+        generateRevealedPhoto({ kind: 'num', text: timeStr });
+      } else {
+        state.secretResult = decodePin(state.pinInput);
+        generateRevealedPhoto(state.secretResult);
+      }
       switchLayer('home');
     }
   }
@@ -411,8 +442,17 @@
   DOM.inputPhotoFile.addEventListener('change', e => {
     const file = e.target.files[0];
     if (file) {
-      state.photoSourceSrc = URL.createObjectURL(file);
-      updateEditorPreview();
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        state.photoSourceSrc = event.target.result;
+        try {
+          localStorage.setItem('cphone_custom_photo', state.photoSourceSrc);
+        } catch (err) {
+          console.warn('La imagen es demasiado grande para guardarse en localStorage', err);
+        }
+        updateEditorPreview();
+      };
+      reader.readAsDataURL(file);
     }
   });
 
@@ -420,6 +460,7 @@
     DOM.selectTimeFormat.addEventListener('change', e => {
       state.use24Hours = (e.target.value === '24');
       updateClocks();
+      updateEditorPreview();
     });
   }
 
@@ -515,7 +556,6 @@
   initClockHoldSecret(DOM.clockStatus);
   initClockHoldSecret(DOM.lockClockText);
 
-  // Inyección segura del icono SVG de borrar para evitar que se pierda
   if (DOM.btnPinDel) {
     DOM.btnPinDel.innerHTML = `
       <svg class="delete-icon" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">

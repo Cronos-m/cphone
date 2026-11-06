@@ -30,7 +30,7 @@ html, body {
 .app-viewport {
   position: relative;
   width: 100%;
-  height: 100dvh;
+  height: 100svh; /* Ocupa el 100% real ocultando barras móviles */
   max-width: 430px;
   margin: 0 auto;
   overflow: hidden;
@@ -49,7 +49,7 @@ html, body {
   display: flex !important;
 }
 
-/* ==================== PANEL NEUMORFISMO ==================== */
+/* PANEL NEUMORFISMO */
 .neu-settings-screen {
   background: var(--neu-bg);
   overflow-y: auto;
@@ -295,7 +295,7 @@ html, body {
   margin-top: 4px;
 }
 
-/* ==================== MARCO TELÉFONO ==================== */
+/* MARCO TELÉFONO */
 .phone-frame {
   position: relative;
   width: 100%;
@@ -429,7 +429,7 @@ html, body {
   font-size: 20px;
 }
 
-/* ==================== TECLADO PIN Y GAPS ==================== */
+/* TECLADO PIN Y GAPS */
 .pin-view {
   padding: 85px 24px 35px;
   justify-content: space-between;
@@ -464,12 +464,11 @@ html, body {
   color: #fff;
 }
 
-/* Controla el espacio de los puntos indicadores (dots) */
 .pin-dots {
   display: flex;
-  gap: 30px; /* <--- Modifica aquí la separación horizontal entre los 4 círculos */
+  gap: 30px;
   justify-content: center;
-  margin-top: 50px; /* <--- Distancia vertical respecto al texto superior */
+  margin-top: 50px;
   margin-bottom: 10px;
 }
 
@@ -486,11 +485,10 @@ html, body {
   background: #fff;
 }
 
-/* Controla el espacio (gap) y tamaño de la cuadrícula iOS */
 .theme-ios .keypad-grid {
   display: grid;
   grid-template-columns: repeat(3, 75px);
-  gap: 20px 24px; /* <--- [Espacio vertical] [Espacio horizontal] entre botones */
+  gap: 20px 24px;
   justify-content: center;
   margin: 20px auto 0;
 }
@@ -531,7 +529,6 @@ html, body {
   justify-content: center;
 }
 
-/* Estilo y tamaño del icono SVG de borrar */
 .keypad-btn .delete-icon {
   width: 26px;
   height: 26px;
@@ -539,11 +536,10 @@ html, body {
   display: block;
 }
 
-/* Controla el espacio (gap) y tamaño de la cuadrícula Android */
 .theme-android .keypad-grid {
   display: grid;
   grid-template-columns: repeat(3, 84px);
-  gap: 26px 26px; /* <--- [Espacio vertical] [Espacio horizontal] entre botones */
+  gap: 26px 26px;
   justify-content: center;
   margin: 20px auto 0;
 }
