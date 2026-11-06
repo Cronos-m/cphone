@@ -426,10 +426,20 @@ html, body {
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(25px);
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #fff;
-  font-size: 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.shortcut-btn img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
 }
 
 /* TECLADO PIN Y GAPS */
@@ -826,4 +836,13 @@ html, body {
   background: rgba(255, 255, 255, 0.7);
   z-index: 60;
   cursor: pointer;
+}
+
+.shortcut-btn img,
+.gallery-action-btn img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  pointer-events: none;
+  filter: brightness(0) invert(1); /* <-- Esto convierte cualquier icono negro en blanco */
 }
