@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cphone-cache-v5';
+const CACHE_NAME = 'cphone-cache-v6';
 const ASSETS = [
   './',
   './index.html',
@@ -33,13 +33,11 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  // Evitar interferir con peticiones externas o de extensiones
   if (!e.request.url.startsWith(self.location.origin)) return;
 
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
       if (cachedResponse) {
-        // Devuelve el recurso en caché pero actualiza en segundo plano si hay red
         fetch(e.request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             caches.open(CACHE_NAME).then((cache) => cache.put(e.request, networkResponse));
