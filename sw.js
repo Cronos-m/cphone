@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cphone-cache-v4';
+const CACHE_NAME = 'cphone-cache-v5';
 const ASSETS = [
   './',
   './index.html',
@@ -11,9 +11,7 @@ const ASSETS = [
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS).catch(err => {
-        console.warn('Recurso omitido en caché:', err);
-      });
+      return cache.addAll(ASSETS).catch(() => {});
     })
   );
   self.skipWaiting();
@@ -35,9 +33,22 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
+  // Evitar interferir con peticiones externas o de extensiones
+  if (!e.request.url.startsWith(self.location.origin)) return;
+
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
-      return cachedResponse || fetch(e.request).catch(() => {
+      if (cachedResponse) {
+        // Devuelve el recurso en caché pero actualiza en segundo plano si hay red
+        fetch(e.request).then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            caches.open(CACHE_NAME).then((cache) => cache.put(e.request, networkResponse));
+          }
+        }).catch(() => {});
+        return cachedResponse;
+      }
+
+      return fetch(e.request).catch(() => {
         if (e.request.mode === 'navigate') {
           return caches.match('./index.html');
         }

@@ -1,7 +1,6 @@
 {
   "short_name": "Cphone",
-  "name": "Cphone - Mental Picture",
-  "description": "Simulador PWA de Sistema Operativo para Ilusionismo",
+  "name": "Cphone - Mental Picture PWA",
   "icons": [
     {
       "src": "./icon.png",
@@ -16,7 +15,7 @@
       "purpose": "any maskable"
     }
   ],
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#121217",
